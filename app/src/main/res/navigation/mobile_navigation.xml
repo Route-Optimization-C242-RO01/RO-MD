@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.android.capstone.routeoptimizationapp.ui.home.HomeFragment"
+        android:name="com.android.capstone.routeoptimizationapp.ui.todo.TodoFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_todo" />
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.android.capstone.routeoptimizationapp.ui.dashboard.DashboardFragment"
+        android:name="com.android.capstone.routeoptimizationapp.ui.done.DoneFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_done" />
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.android.capstone.routeoptimizationapp.ui.notifications.NotificationsFragment"
+        android:name="com.android.capstone.routeoptimizationapp.ui.profile.ProfileFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_profile" />
 </navigation>
