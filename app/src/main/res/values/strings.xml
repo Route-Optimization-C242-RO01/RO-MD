@@ -9,4 +9,9 @@
     <string name="login_text">Login</string>
     <string name="register_text">Register</string>
     <string name="register_here">Register Here</string>
+
+<!--    Menu -->
+    <string name="todo_menu">Todo</string>
+    <string name="done_menu">Done</string>
+    <string name="profile_menu">Profile</string>
 </resources>
