@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">MyRouteOptimization</string>
+    <string name="title_todo">ToDo</string>
+    <string name="title_done">Done</string>
+    <string name="title_profile">Profile</string>
+    <string name="logout">Log out</string>
+    <string name="name">Username</string>
+    <string name="route_title">Todo 1</string>
+    <string name="route_distance">12 km</string>
+    <string name="destination">Destination 1</string>
+    <string name="add_destination">Add Destination</string>
+    <string name="optimize_route">Optimize Route</string>
+    <string name="street">Street</string>
+    <string name="city">City</string>
+    <string name="province">Province</string>
+    <string name="postal_code">Postal Code</string>
+    <string name="kg">Kg</string>
+    <string name="submit">Submit</string>
+    <string name="direction">Direction</string>
+    <string name="done">Done</string>
+    <string name="title_login_page">Log In</string>
+    <string name="password">Password</string>
+    <string name="retype_password">Retype Password</string>
+    <string name="login">Login</string>
+    <string name="button_error">Please complete the data first</string>
+    <string name="title_welcome_page">Welcome!</string>
+    <string name="register">Register</string>
+    <string name="title_register_page">Complete your personal data below</string>
+</resources>
