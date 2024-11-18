@@ -26,4 +26,8 @@
     <string name="title_welcome_page">Welcome!</string>
     <string name="register">Register</string>
     <string name="title_register_page">Complete your personal data below</string>
+
+<!--    Input Error -->
+    <string name="false_email_pattern">Please use @ For email</string>
+    <string name="required_password_length_message">Password must be at least 8 Character</string>
 </resources>

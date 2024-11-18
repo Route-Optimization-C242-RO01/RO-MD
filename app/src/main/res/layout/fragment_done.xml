@@ -7,6 +7,7 @@
     tools:context=".ui.main.done.DoneFragment">
 
     <androidx.recyclerview.widget.RecyclerView
+        tools:listitem="@layout/item_row_route"
         android:id="@+id/rv_route"
         android:layout_width="match_parent"
         android:layout_height="0dp"

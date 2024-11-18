@@ -33,15 +33,15 @@
         android:id="@+id/route_distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
         android:backgroundTint="@color/white"
-        android:textColor="@color/black"
         android:drawableLeft="@drawable/ic_car_24dp"
-        tools:text="@string/route_distance"
-        app:layout_constraintStart_toStartOf="@id/map"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@id/map"
-        tools:ignore="RtlHardcoded" />
+        app:layout_constraintStart_toStartOf="@id/map"
+        tools:ignore="RtlHardcoded"
+        tools:text="@string/route_distance" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_list_destination"
@@ -58,7 +58,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:backgroundTint="@color/grey"
         android:text="@string/direction"
         app:layout_constraintEnd_toStartOf="@id/done"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,7 +69,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:backgroundTint="@color/grey"
         android:text="@string/done"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/direction"
