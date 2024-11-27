@@ -1,6 +1,8 @@
 package com.example.myrouteoptimization.ui.main.todo
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -27,6 +29,9 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
+import java.text.NumberFormat
+import java.util.Locale
 
 class TodoFragment : Fragment(), OnMapReadyCallback {
 
@@ -67,10 +72,37 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
         val routeAdapter = TodoAdapter()
 
         binding.rvRoute.apply {
-            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             setHasFixedSize(true)
             adapter = routeAdapter
         }
+
+        viewModel.getUnfinishedRoute().observe(viewLifecycleOwner) { result ->
+            if (result != null) {
+                when (result) {
+                    is Result.Loading -> {
+                        binding.progressBar2.visibility = View.VISIBLE
+                    }
+                    is Result.Success -> {
+                        binding.progressBar2.visibility = View.GONE
+                        val data = result.data
+                        routeAdapter.submitList(data)
+                    }
+                    is Result.Error -> {
+                        binding.progressBar2.visibility = View.GONE
+                        showToast(requireContext(), result.error)
+                    }
+                }
+            }
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+
+        mMap.uiSettings.isZoomControlsEnabled = true
+        mMap.uiSettings.isCompassEnabled = true
 
         viewModel.getUnfinishedRoute().observe(viewLifecycleOwner) { result ->
             if (result != null) {
@@ -81,7 +113,68 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
                     is Result.Success -> {
                         binding.progressBar.visibility = View.GONE
                         val data = result.data
-                        routeAdapter.submitList(data)
+                        val firstData = data.first()
+                        val dataRoute = firstData.dataRouteResults
+
+                        binding.tvRouteTitle.text = firstData.title
+                        binding.routeDistance.text = "${NumberFormat.getNumberInstance(Locale("id", "ID")).format(firstData.totalDistance)} km"
+
+                        if (dataRoute != null) {
+                            val depot = dataRoute[0]!!.dataDetailRouteRoute?.get(0)!!
+                            val depotLatLng =
+                                LatLng(
+                                    depot.latitude!!.toDouble(),
+                                    depot.longitude!!.toDouble()
+                                )
+
+                            mMap.moveCamera(
+                                CameraUpdateFactory.newLatLngZoom(
+                                    depotLatLng,
+                                    5f
+                                )
+                            )
+
+                            mMap.addMarker(
+                                MarkerOptions()
+                                    .position(depotLatLng)
+                                    .title("${depot.street}, ${depot.city}, ${depot.province}, ${depot.postalCode}")
+                                    .snippet("Depot")
+                            )
+
+                            for (i in dataRoute.indices) {
+                                val latlng = dataRoute[i]!!.dataDetailRouteRoute
+
+                                val polylineOptions = PolylineOptions()
+
+                                polylineOptions.add(depotLatLng)
+
+                                for (j in 1 .. latlng!!.size - 2) {
+                                    val currentLatLng =
+                                        LatLng(
+                                            latlng[j]!!.latitude!!.toDouble(),
+                                            latlng[j]!!.longitude!!.toDouble()
+                                        )
+
+                                    mMap.addMarker(
+                                        MarkerOptions()
+                                            .position(currentLatLng)
+                                            .title("${latlng[j]?.street}, ${latlng[j]?.city}, ${latlng[j]?.province}, ${latlng[j]?.postalCode}")
+                                            .snippet("${dataRoute[i]?.vehicleSequence}, ${latlng[j]?.demand} kg")
+                                    )
+
+                                    polylineOptions.add(currentLatLng)
+                                }
+
+                                polylineOptions.add(depotLatLng)
+
+                                mMap.addPolyline(
+                                    polylineOptions
+                                        .color(Color.BLUE)
+                                        .width(8f)
+                                )
+
+                            }
+                        }
                     }
                     is Result.Error -> {
                         binding.progressBar.visibility = View.GONE
@@ -91,41 +184,6 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
             }
         }
     }
-
-    override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-
-        googleMap.setOnMapLoadedCallback {
-            // Callback ini dipanggil jika peta berhasil dimuat
-            Toast.makeText(requireContext(), "Map loaded successfully!", Toast.LENGTH_SHORT).show()
-        }
-
-        // Contoh menambahkan marker
-        val sampleLocation = LatLng(-6.200000, 106.816666) // Koordinat Jakarta
-        mMap.addMarker(MarkerOptions().position(sampleLocation).title("Marker in Jakarta"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sampleLocation, 12f))
-    }
-
-//    override fun onResume() {
-//        super.onResume()
-//        binding.rvRoute.children.forEach {
-//            (it.findViewById<MapView>(R.id.map))?.onResume()
-//        }
-//    }
-//
-//    override fun onPause() {
-//        super.onPause()
-//        binding.rvRoute.children.forEach {
-//            (it.findViewById<MapView>(R.id.map))?.onPause()
-//        }
-//    }
-//
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        binding.rvRoute.children.forEach {
-//            (it.findViewById<MapView>(R.id.map))?.onDestroy()
-//        }
-//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

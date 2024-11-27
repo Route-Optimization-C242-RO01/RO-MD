@@ -28,6 +28,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="24sp"
+            android:textColor="@color/black"
             android:layout_marginTop="8dp"
             android:layout_marginStart="8dp"
             card_view:layout_constraintEnd_toStartOf="@id/iv_check"
@@ -40,6 +41,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="12sp"
+            android:textColor="@color/black"
             android:layout_marginTop="4dp"
             android:layout_marginStart="8dp"
             card_view:layout_constraintEnd_toEndOf="parent"
@@ -58,7 +60,8 @@
             card_view:layout_constraintEnd_toEndOf="parent"
             card_view:layout_constraintStart_toEndOf="@id/tv_route_title"
             card_view:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_check_24dp" />
+            android:src="@drawable/ic_check_24dp"
+            android:visibility="gone"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

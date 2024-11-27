@@ -1,4 +1,4 @@
-package com.example.myrouteoptimization.ui.main.todo
+package com.example.myrouteoptimization.ui.main.done
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
@@ -19,7 +19,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 
-class TodoAdapter : ListAdapter<DataItem, TodoAdapter.MyViewHolder>(DIFF_CALLBACK) {
+class DoneAdapter : ListAdapter<DataItem, DoneAdapter.MyViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val binding = ItemRowRouteBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -40,6 +40,7 @@ class TodoAdapter : ListAdapter<DataItem, TodoAdapter.MyViewHolder>(DIFF_CALLBAC
         private val mapView: MapView = itemView.findViewById(R.id.map)
         @SuppressLint("SetTextI18n")
         fun bind(route: DataItem){
+            binding.ivCheck.visibility = View.VISIBLE
             binding.tvRouteTitle.text = route.title
             binding.tvRouteDesc.text = "Number of vehicles: ${route.numberOfVehicles}"
             mapView.onCreate(null)

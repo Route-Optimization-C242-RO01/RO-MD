@@ -63,9 +63,8 @@ dependencies {
     implementation(libs.play.services.maps)
 
     // Firebase Platform
+    //noinspection UseTomlInstead
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
-
-    // Room
 
     // Retrofit
     implementation(libs.retrofit)

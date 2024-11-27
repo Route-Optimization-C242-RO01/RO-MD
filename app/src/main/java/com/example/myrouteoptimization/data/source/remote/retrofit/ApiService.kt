@@ -26,4 +26,7 @@ interface ApiService {
 
     @GET("unfinished")
     suspend fun getUnfinishedRoute(): RouteResponse
+
+    @GET("finished")
+    suspend fun getFinishedRoute(): RouteResponse
 }
