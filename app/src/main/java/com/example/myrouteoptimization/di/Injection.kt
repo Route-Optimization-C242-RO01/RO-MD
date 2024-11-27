@@ -1,7 +1,13 @@
 package com.example.myrouteoptimization.di
 
+import android.content.Context
 import com.example.myrouteoptimization.data.repository.RouteRepository
 import com.example.myrouteoptimization.data.repository.UserRepository
+import com.example.myrouteoptimization.data.source.datastore.UserPreference
+import com.example.myrouteoptimization.data.source.datastore.dataStore
+import com.example.myrouteoptimization.data.source.remote.retrofit.ApiConfig
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 /**
  * A singleton object that provides dependency injection for various repositories.
@@ -15,31 +21,17 @@ import com.example.myrouteoptimization.data.repository.UserRepository
  * and maintainable.
  */
 object Injection {
-    /**
-     * Provides an instance of the UserRepository.
-     *
-     * This function provides the UserRepository that is responsible for handling
-     * user-related data operations, such as fetching user data, saving user information,
-     * and managing user preferences. This repository is typically used in the ViewModel
-     * or other components that require user data.
-     *
-     * @return An instance of UserRepository.
-     */
-    fun provideUserRepository() : UserRepository {
-        return UserRepository.getInstance()
+    fun provideUserRepository(context: Context): UserRepository {
+        val pref = UserPreference.getInstance(context.dataStore)
+        val user = runBlocking { pref.getSession().first() }
+        val apiService = ApiConfig.getApiService(user.token)
+        return UserRepository.getInstance(pref, apiService)
     }
 
-    /**
-     * Provides an instance of the RouteRepository.
-     *
-     * This function provides the RouteRepository that is responsible for handling
-     * route-related data operations, such as fetching route data, saving routes, or
-     * managing route-related preferences. This repository is typically used in ViewModels
-     * or other components that need to work with route data.
-     *
-     * @return An instance of RouteRepository.
-     */
-    fun provideRouteRepository() : RouteRepository {
-        return RouteRepository.getInstance()
+    fun provideRouteRepository(context: Context): RouteRepository {
+        val pref = UserPreference.getInstance(context.dataStore)
+        val user = runBlocking { pref.getSession().first() }
+        val apiService = ApiConfig.getApiService(user.token)
+        return RouteRepository.getInstance(pref, apiService)
     }
 }

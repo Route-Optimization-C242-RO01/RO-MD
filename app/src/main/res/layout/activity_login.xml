@@ -83,7 +83,7 @@
         app:layout_constraintTop_toBottomOf="@id/passwordTextView"
         tools:alpha="100">
 
-        <com.example.myrouteoptimization.ui.view.PasswordEditTextCv
+        <com.example.myrouteoptimization.ui.custom.PasswordEditTextCv
             android:id="@+id/edit_text_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -113,7 +113,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="8dp"
         android:text="@string/button_error"
-        android:textColor="@color/red"
+        android:textColor="@color/md_theme_error"
         app:layout_constraintEnd_toEndOf="@+id/loginButton"
         app:layout_constraintTop_toBottomOf="@id/layout_password"
         android:visibility="gone"/>

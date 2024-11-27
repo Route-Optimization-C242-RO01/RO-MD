@@ -2,23 +2,35 @@ package com.example.myrouteoptimization.ui.register
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.example.myrouteoptimization.R
 import com.example.myrouteoptimization.databinding.ActivityRegisterBinding
-import com.example.myrouteoptimization.ui.welcome.WelcomeActivity
+import com.example.myrouteoptimization.ui.AuthViewModelFactory
+import kotlinx.coroutines.launch
+import com.example.myrouteoptimization.utils.Result
+import com.example.myrouteoptimization.utils.showMaterialDialog
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
+
+    private lateinit var factory: AuthViewModelFactory
+    private val viewModel: RegisterViewModel by viewModels {
+        factory
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        factory = AuthViewModelFactory.getInstanceUser(this@RegisterActivity)
 
         setupView()
         setupAction()
@@ -44,53 +56,48 @@ class RegisterActivity : AppCompatActivity() {
             val pass = binding.editTextPassword.text.toString()
             val retypePass = binding.editTextRetypePassword.text.toString()
 
-            if (name.isNotEmpty() && pass.length >= 8 && retypePass.length >= 8){
+            if (name.isNotEmpty() && pass.length >= 8 && retypePass.length >= 8 && pass == retypePass){
                 binding.buttonError.visibility = View.GONE
 
-                val intent = Intent(this, WelcomeActivity::class.java)
-                intent.flags =
-                    Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                startActivity(intent)
-                finish()
+                lifecycleScope.launch {
+                    viewModel.register(name, pass, retypePass).observe(this@RegisterActivity) { result ->
+                        if (result != null) {
+                            when (result) {
+                                is Result.Loading -> {
+                                    binding.progressBar.visibility = View.VISIBLE
+                                }
 
-//                lifecycleScope.launch {
-//                    viewModel.register(name, pass, retypePass).observe(this@RegisterActivity) { result ->
-//                        if (result != null) {
-//                            when (result) {
-//                                is Result.Loading -> {
-//                                    binding.progressBar.visibility = View.VISIBLE
-//                                }
-//
-//                                is Result.Success -> {
-//                                    binding.progressBar.visibility = View.GONE
-//                                    AlertDialog.Builder(this@SignupActivity).apply {
-//                                        setTitle(getString(R.string.ad_title))
-//                                        setMessage(result.data)
-//                                        setPositiveButton(getString(R.string.ad_button)) { _, _ ->
-//                                            finish()
-//                                        }
-//                                        create()
-//                                        show()
-//                                    }
-//                                }
-//
-//                                is Result.Error -> {
-//                                    binding.progressBar.visibility = View.GONE
-//                                    AlertDialog.Builder(this@SignupActivity).apply {
-//                                        setTitle(getString(R.string.ad_title))
-//                                        setMessage(result.error)
-//                                        setPositiveButton(getString(R.string.ad_button)) { _, _ ->
-//                                        }
-//                                        create()
-//                                        show()
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
+                                is Result.Success -> {
+                                    binding.progressBar.visibility = View.GONE
+                                    showMaterialDialog(
+                                        this@RegisterActivity,
+                                        getString(R.string.ad_title),
+                                        result.data!!,
+                                        getString(R.string.ad_button)
+                                    ) {
+                                        finish()
+                                    }
+                                }
+
+                                is Result.Error -> {
+                                    binding.progressBar.visibility = View.GONE
+                                    showMaterialDialog(
+                                        this@RegisterActivity,
+                                        getString(R.string.ad_title_error),
+                                        result.error,
+                                        getString(R.string.ad_button)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if (pass != retypePass) {
+                binding.buttonError.visibility = View.VISIBLE
+                binding.buttonError.text = getString(R.string.pass_error)
             } else {
                 binding.buttonError.visibility = View.VISIBLE
+                binding.buttonError.text = getString(R.string.button_error)
             }
         }
     }

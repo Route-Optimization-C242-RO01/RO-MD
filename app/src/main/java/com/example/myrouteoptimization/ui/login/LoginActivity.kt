@@ -8,17 +8,32 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.example.myrouteoptimization.R
+import com.example.myrouteoptimization.data.source.datastore.UserModel
 import com.example.myrouteoptimization.databinding.ActivityLoginBinding
+import com.example.myrouteoptimization.ui.AuthViewModelFactory
 import com.example.myrouteoptimization.ui.main.MainActivity
+import kotlinx.coroutines.launch
+import com.example.myrouteoptimization.utils.Result
+import com.example.myrouteoptimization.utils.showMaterialDialog
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
+
+    private lateinit var factory: AuthViewModelFactory
+    private val viewModel: LoginViewModel by viewModels {
+        factory
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        factory = AuthViewModelFactory.getInstanceUser(this@LoginActivity)
 
         setupView()
         setupAction()
@@ -46,55 +61,46 @@ class LoginActivity : AppCompatActivity() {
             if (name.isNotEmpty() && pass.length >= 8) {
                 binding.buttonError.visibility = View.GONE
 
-                val intent = Intent(this, MainActivity::class.java)
-                intent.flags =
-                    Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                startActivity(intent)
-                finish()
+                lifecycleScope.launch {
+                    viewModel.login(name, pass).observe(this@LoginActivity) { result ->
+                        if (result != null) {
+                            when (result) {
+                                is Result.Loading -> {
+                                    binding.progressBar.visibility = View.VISIBLE
+                                }
 
-//                lifecycleScope.launch {
-//                    viewModel.login(name, pass).observe(this@LoginActivity) { result ->
-//                        if (result != null) {
-//                            when (result) {
-//                                is Result.Loading -> {
-//                                    binding.progressBar.visibility = View.VISIBLE
-//                                }
-//
-//                                is Result.Success -> {
-//                                    binding.progressBar.visibility = View.GONE
-//
-//                                    viewModel.saveSession(UserModel(email, result.data.token!!))
-//
-//                                    AlertDialog.Builder(this@LoginActivity).apply {
-//                                        setTitle(getString(R.string.ad_title))
-//                                        setMessage(result.data.name)
-//                                        setPositiveButton(getString(R.string.ad_button)) { _, _ ->
-//                                            val intent = Intent(context, MainActivity::class.java)
-//                                            intent.flags =
-//                                                Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-//                                            startActivity(intent)
-//                                            finish()
-//                                        }
-//                                        create()
-//                                        show()
-//                                    }
-//                                }
-//
-//                                is Result.Error -> {
-//                                    binding.progressBar.visibility = View.GONE
-//                                    AlertDialog.Builder(this@LoginActivity).apply {
-//                                        setTitle(getString(R.string.ad_title))
-//                                        setMessage(result.error)
-//                                        setPositiveButton(getString(R.string.ad_button)) { _, _ ->
-//                                        }
-//                                        create()
-//                                        show()
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
+                                is Result.Success -> {
+                                    binding.progressBar.visibility = View.GONE
+
+                                    viewModel.saveSession(UserModel(result.data.name!!, result.data.token!!))
+
+                                    showMaterialDialog(
+                                        this@LoginActivity,
+                                        getString(R.string.ad_title),
+                                        result.data.name,
+                                        getString(R.string.ad_button)
+                                    ) {
+                                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                                        intent.flags =
+                                            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                                        startActivity(intent)
+                                        finish()
+                                    }
+                                }
+
+                                is Result.Error -> {
+                                    binding.progressBar.visibility = View.GONE
+                                    showMaterialDialog(
+                                        this@LoginActivity,
+                                        getString(R.string.ad_title_error),
+                                        result.error,
+                                        getString(R.string.ad_button)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             } else {
                 binding.buttonError.visibility = View.VISIBLE
             }

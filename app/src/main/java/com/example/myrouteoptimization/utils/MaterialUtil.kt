@@ -19,10 +19,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
  */
 fun showMaterialDialog(
     context: Context,
-    title : String,
-    message :String,
-    positiveButtonText : String,
-    onPositiveClick : (() -> Unit)? = null,
+    title: String,
+    message:String,
+    positiveButtonText: String,
+    onPositiveClick: (() -> Unit?)? = null,
 ) {
     MaterialAlertDialogBuilder(context)
         .setTitle(title)

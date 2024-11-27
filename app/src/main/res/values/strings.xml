@@ -26,6 +26,12 @@
     <string name="title_welcome_page">Welcome!</string>
     <string name="register">Register</string>
     <string name="title_register_page">Complete your personal data below</string>
+    <string name="ad_title">Yeah!</string>
+    <string name="ad_title_error">Oh no ..</string>
+    <string name="ad_button">Continue</string>
+    <string name="pass_error">Password didn\'t match</string>
+    <string name="route_vehicles_form">Number of vehicles</string>
+    <string name="route_title_form">Title</string>
 
 <!--    Input Error -->
     <string name="false_email_pattern">Please use @ For email</string>

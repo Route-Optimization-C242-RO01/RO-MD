@@ -1,17 +1,17 @@
-package com.example.myrouteoptimization.ui.main.profile
+package com.example.myrouteoptimization.ui.login
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.myrouteoptimization.data.repository.UserRepository
 import com.example.myrouteoptimization.data.source.datastore.UserModel
 import kotlinx.coroutines.launch
 
-class ProfileViewModel(private val userRepository: UserRepository) : ViewModel() {
-    fun logout() {
+class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
+    suspend fun login(name: String, pass: String) = userRepository.login(name, pass)
+
+    fun saveSession(user: UserModel) {
         viewModelScope.launch {
-            userRepository.logout()
+            userRepository.saveSession(user)
         }
     }
 }

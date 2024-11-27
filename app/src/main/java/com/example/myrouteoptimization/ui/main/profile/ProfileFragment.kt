@@ -5,33 +5,41 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.example.myrouteoptimization.databinding.FragmentProfileBinding
+import com.example.myrouteoptimization.ui.AuthViewModelFactory
+import com.example.myrouteoptimization.ui.RouteViewModelFactory
+import com.example.myrouteoptimization.ui.main.todo.TodoViewModel
 
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
+
+    private lateinit var factory: AuthViewModelFactory
+    private val viewModel: ProfileViewModel by viewModels {
+        factory
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val profileViewModel =
-            ViewModelProvider(this)[ProfileViewModel::class.java]
-
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-//        val textView: TextView = binding.textName
-//        profileViewModel.text.observe(viewLifecycleOwner) {
-//            textView.text = it
-//        }
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        factory = AuthViewModelFactory.getInstanceUser(requireContext())
+
+        binding.logoutButton.setOnClickListener {
+            viewModel.logout()
+        }
     }
 
     override fun onDestroyView() {
