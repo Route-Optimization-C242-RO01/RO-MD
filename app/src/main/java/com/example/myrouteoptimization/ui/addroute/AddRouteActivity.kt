@@ -3,6 +3,7 @@ package com.example.myrouteoptimization.ui.addroute
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,9 +27,9 @@ import java.util.concurrent.TimeUnit
 
 class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityAddRouteBinding
-    private lateinit var adapter : AddRouteAdapter
+    private lateinit var adapter: AddRouteAdapter
     private val destinationData = mutableListOf<PostDataItem>()
-    private var gMaps : GoogleMap? = null
+    private var gMaps: GoogleMap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,10 +39,15 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
         setupView()
         setupRv()
         setupMap()
+        updateOptimizeButtonState()
 
-        binding.addDestination.setOnClickListener{
+        binding.addDestination.setOnClickListener {
             val intent = Intent(this, AddDestinationActivity::class.java)
             addDestinationLauncher.launch(intent)
+        }
+
+        binding.optimizeRoute.setOnClickListener {
+
         }
     }
 
@@ -55,15 +61,17 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (newRoute != null) {
                     destinationData.add(newRoute)
                     adapter.notifyItemInserted(destinationData.size - 1)
+                    updateOptimizeButtonState()
                 }
             }
         }
     }
 
     private fun setupRv() {
-        adapter = AddRouteAdapter(destinationData) {pos ->
+        adapter = AddRouteAdapter(destinationData) { pos ->
             destinationData.removeAt(pos)
             adapter.notifyItemRemoved(pos)
+            updateOptimizeButtonState()
         }
 
         binding.rvListDestination.layoutManager = LinearLayoutManager(this)
@@ -96,19 +104,20 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun updateMapMarkers() {
         gMaps?.clear()
         for (item in destinationData) {
-           val address = listOfNotNull(
+            val address = listOfNotNull(
                 item.street,
                 item.city,
                 item.province,
                 item.postalCode
             ).joinToString(", ")
+
             getLatLngFromAddress(address) { latLng ->
                 latLng?.let {
                     gMaps?.addMarker(
                         MarkerOptions()
                             .position(it)
                             .title(item.street)
-                        )
+                    )
                     gMaps?.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 12f))
                 }
             }
@@ -116,10 +125,11 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun getLatLngFromAddress(address: String, callback: (LatLng?) -> Unit) {
-        // GMaps API KEY
+        // Google Maps API Key
         val key = "AIzaSyDA8Gms6H15jvdrLusxTNj-xq92O80W8NU"
         val encodedAddress = URLEncoder.encode(address, "UTF-8")
         val urlToFetchAddress = "https://maps.googleapis.com/maps/api/geocode/json?address=$encodedAddress&key=$key"
+        Log.d("url", urlToFetchAddress)
 
         Thread {
             try {
@@ -164,4 +174,7 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
         }.start()
     }
 
+    private fun updateOptimizeButtonState() {
+        binding.optimizeRoute.isEnabled = destinationData.size > 2
+    }
 }
