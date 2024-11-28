@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.myrouteoptimization.data.repository.RouteRepository
 import com.example.myrouteoptimization.di.Injection
+import com.example.myrouteoptimization.ui.main.done.DoneViewModel
 import com.example.myrouteoptimization.ui.main.todo.TodoViewModel
 
 class RouteViewModelFactory(private val routeRepository: RouteRepository) : ViewModelProvider.NewInstanceFactory() {
@@ -13,8 +14,11 @@ class RouteViewModelFactory(private val routeRepository: RouteRepository) : View
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(TodoViewModel::class.java) -> {
-            TodoViewModel(routeRepository) as T
-        }
+                TodoViewModel(routeRepository) as T
+            }
+            modelClass.isAssignableFrom(DoneViewModel::class.java) -> {
+                DoneViewModel(routeRepository) as T
+            }
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }
     }

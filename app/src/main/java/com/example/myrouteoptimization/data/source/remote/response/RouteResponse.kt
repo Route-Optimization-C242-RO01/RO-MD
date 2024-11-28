@@ -25,6 +25,9 @@ data class DataItem(
 	@field:SerializedName("id_results")
 	val idResults: String? = null,
 
+	@field:SerializedName("total_distance")
+	val totalDistance: Float? = null,
+
 	@field:SerializedName("number_of_vehicles")
 	val numberOfVehicles: Int? = null,
 
@@ -39,6 +42,9 @@ data class DataDetailRouteRouteItem(
 
 	@field:SerializedName("id_route")
 	val idRoute: String? = null,
+
+	@field:SerializedName("demand")
+	val demand: String? = null,
 
 	@field:SerializedName("province")
 	val province: String? = null,
@@ -58,8 +64,8 @@ data class DataDetailRouteRouteItem(
 	@field:SerializedName("postal_code")
 	val postalCode: String? = null,
 
-	@field:SerializedName("kg")
-	val kg: String? = null,
+	@field:SerializedName("sequence")
+	val sequence: Int? = null,
 
 	@field:SerializedName("longitude")
 	val longitude: String? = null
@@ -72,6 +78,9 @@ data class DataRouteResultsItem(
 
 	@field:SerializedName("id_results")
 	val idResults: String? = null,
+
+	@field:SerializedName("vehicle_sequence")
+	val vehicleSequence: Int? = null,
 
 	@field:SerializedName("data_detailRoute_route")
 	val dataDetailRouteRoute: List<DataDetailRouteRouteItem?>? = null

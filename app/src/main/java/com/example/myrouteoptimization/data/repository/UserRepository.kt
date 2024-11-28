@@ -1,5 +1,6 @@
 package com.example.myrouteoptimization.data.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import com.example.myrouteoptimization.data.source.datastore.UserModel

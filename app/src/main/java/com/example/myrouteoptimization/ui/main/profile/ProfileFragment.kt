@@ -1,6 +1,8 @@
 package com.example.myrouteoptimization.ui.main.profile
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +13,7 @@ import com.example.myrouteoptimization.databinding.FragmentProfileBinding
 import com.example.myrouteoptimization.ui.AuthViewModelFactory
 import com.example.myrouteoptimization.ui.RouteViewModelFactory
 import com.example.myrouteoptimization.ui.main.todo.TodoViewModel
+import com.example.myrouteoptimization.ui.welcome.WelcomeActivity
 
 class ProfileFragment : Fragment() {
 
@@ -36,6 +39,10 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         factory = AuthViewModelFactory.getInstanceUser(requireContext())
+
+        viewModel.getSession().observe(viewLifecycleOwner) { user ->
+            binding.textName.text = user.username
+        }
 
         binding.logoutButton.setOnClickListener {
             viewModel.logout()

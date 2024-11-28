@@ -9,6 +9,10 @@ import com.example.myrouteoptimization.data.source.datastore.UserModel
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(private val userRepository: UserRepository) : ViewModel() {
+    fun getSession(): LiveData<UserModel> {
+        return userRepository.getSession().asLiveData()
+    }
+
     fun logout() {
         viewModelScope.launch {
             userRepository.logout()

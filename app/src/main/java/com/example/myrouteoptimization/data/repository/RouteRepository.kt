@@ -42,20 +42,19 @@ class RouteRepository (
         }
     }
 
-
-//    fun getStory(): LiveData<Result<List<ListStoryItem>>> = liveData {
-//        emit(Result.Loading)
-//        try {
-//            val response = apiService.getStory()
-//            val stories = response.listStory
-//            emit(Result.Success(stories))
-//        } catch (e: HttpException) {
-//            val jsonInString = e.response()?.errorBody()?.string()
-//            val errorBody = Gson().fromJson(jsonInString, StoryResponse::class.java)
-//            val errorMessage = errorBody.message
-//            emit(Result.Error(errorMessage!!))
-//        }
-//    }
+    fun getFinishedRoute(): LiveData<Result<List<DataItem>>> = liveData {
+        emit(Result.Loading)
+        try {
+            val response = apiService.getFinishedRoute()
+            val data = response.data
+            emit(Result.Success(data))
+        } catch (e: HttpException) {
+            val jsonInString = e.response()?.errorBody()?.string()
+            val errorBody = Gson().fromJson(jsonInString, RouteResponse::class.java)
+            val errorMessage = errorBody.message
+            emit(Result.Error(errorMessage!!))
+        }
+    }
 
     companion object {
     @Volatile

@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, WelcomeActivity::class.java))
                 finish()
             }
+            Log.d("Abc MainActivity", user.token)
         }
 
         setupView()
