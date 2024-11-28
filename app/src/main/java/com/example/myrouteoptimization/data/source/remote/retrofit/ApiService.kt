@@ -35,7 +35,7 @@ interface ApiService {
     data class OptimizeRequest(
         @SerializedName("Number_of_vehicles") val numberOfVehicles : Int,
         @SerializedName("title") val title: String,
-        @SerializedName("status") val status : String,
+        @SerializedName("status") val status : String = "unfinished",
         @SerializedName("data") val data : List<PostDataItem>
     )
 
