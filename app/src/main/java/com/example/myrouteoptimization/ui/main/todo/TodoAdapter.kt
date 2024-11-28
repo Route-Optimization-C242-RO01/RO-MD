@@ -13,11 +13,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myrouteoptimization.R
 import com.example.myrouteoptimization.data.source.remote.response.DataItem
 import com.example.myrouteoptimization.databinding.ItemRowRouteBinding
+import com.example.myrouteoptimization.ui.detail.DetailActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
+import java.text.NumberFormat
+import java.util.Locale
 
 class TodoAdapter : ListAdapter<DataItem, TodoAdapter.MyViewHolder>(DIFF_CALLBACK) {
 
@@ -29,11 +32,12 @@ class TodoAdapter : ListAdapter<DataItem, TodoAdapter.MyViewHolder>(DIFF_CALLBAC
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val route = getItem(position)
         holder.bind(route)
-//        holder.itemView.setOnClickListener{
-//            val intentDetail = Intent(holder.itemView.context, DetailActivity::class.java)
-//            intentDetail.putExtra(DetailActivity.EXTRA_STORY, route.id)
-//            holder.itemView.context.startActivity(intentDetail)
-//        }
+        holder.itemView.setOnClickListener{
+            val intentDetail = Intent(holder.itemView.context, DetailActivity::class.java)
+            intentDetail.putExtra(DetailActivity.EXTRA_ID, route.idResults)
+            intentDetail.putExtra(DetailActivity.EXTRA_STATUS, route.status)
+            holder.itemView.context.startActivity(intentDetail)
+        }
     }
 
     class MyViewHolder(private val binding: ItemRowRouteBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -41,7 +45,12 @@ class TodoAdapter : ListAdapter<DataItem, TodoAdapter.MyViewHolder>(DIFF_CALLBAC
         @SuppressLint("SetTextI18n")
         fun bind(route: DataItem){
             binding.tvRouteTitle.text = route.title
-            binding.tvRouteDesc.text = "Number of vehicles: ${route.numberOfVehicles}"
+            binding.tvRouteDesc.text =
+                "Number of vehicles: ${route.numberOfVehicles} \n${
+                    NumberFormat.getNumberInstance(
+                        Locale("id", "ID")
+                    ).format(route.totalDistance)
+                } km"
             mapView.onCreate(null)
             val dataRoute = route.dataRouteResults
 

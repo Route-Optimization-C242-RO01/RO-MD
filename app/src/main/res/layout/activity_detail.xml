@@ -12,6 +12,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="24sp"
+        android:textColor="@color/black"
         android:layout_margin="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -47,22 +48,13 @@
         android:id="@+id/rv_list_destination"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/map"
         app:layout_constraintBottom_toTopOf="@id/guidelineHorizontal"/>
-
-    <Button
-        android:id="@+id/direction"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="@string/direction"
-        app:layout_constraintEnd_toStartOf="@id/done"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guidelineHorizontal"
-        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <Button
         android:id="@+id/done"
@@ -71,9 +63,21 @@
         android:layout_margin="8dp"
         android:text="@string/done"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/direction"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/guidelineHorizontal"
         app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineHorizontal"
@@ -81,7 +85,7 @@
         android:layout_height="64dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintGuide_percent="0.9"
+        app:layout_constraintGuide_percent="0.93"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
