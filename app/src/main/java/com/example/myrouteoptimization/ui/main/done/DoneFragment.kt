@@ -65,7 +65,7 @@ class DoneFragment : Fragment() {
                     }
                     is Result.Error -> {
                         binding.progressBar.visibility = View.GONE
-                        showToast(requireContext(), result.error)
+                        binding.error.text = result.error
                     }
                 }
             }

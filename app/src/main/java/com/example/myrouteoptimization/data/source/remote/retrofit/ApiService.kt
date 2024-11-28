@@ -5,12 +5,15 @@ import com.example.myrouteoptimization.data.source.remote.response.OptimizeRespo
 import com.example.myrouteoptimization.data.source.remote.response.PostDataItem
 import com.example.myrouteoptimization.data.source.remote.response.RegisterResponse
 import com.example.myrouteoptimization.data.source.remote.response.RouteResponse
+import okhttp3.Route
 import com.google.gson.annotations.SerializedName
 import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Path
 
 interface ApiService {
     @FormUrlEncoded
@@ -46,4 +49,9 @@ interface ApiService {
 
     @GET("finished")
     suspend fun getFinishedRoute(): RouteResponse
+
+    @PUT("/updatetofinished/{id_results}")
+    suspend fun updateToFinished(
+        @Path("id_results") idResults: String
+    ): RouteResponse
 }

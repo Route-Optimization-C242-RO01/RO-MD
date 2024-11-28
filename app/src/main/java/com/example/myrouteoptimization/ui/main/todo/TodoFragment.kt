@@ -90,7 +90,7 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
                     }
                     is Result.Error -> {
                         binding.progressBar2.visibility = View.GONE
-                        showToast(requireContext(), result.error)
+                        binding.error.text = result.error
                     }
                 }
             }
@@ -178,7 +178,6 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
                     }
                     is Result.Error -> {
                         binding.progressBar.visibility = View.GONE
-                        showToast(requireContext(), result.error)
                     }
                 }
             }

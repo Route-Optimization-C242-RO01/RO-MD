@@ -32,6 +32,9 @@
     <string name="pass_error">Password didn\'t match</string>
     <string name="route_vehicles_form">Number of vehicles</string>
     <string name="route_title_form">Title</string>
+    <string name="route_vehicle">Vehicle 1</string>
+    <string name="route_desc">... Street</string>
+    <string name="error">Error</string>
 
 <!--    Input Error -->
     <string name="false_email_pattern">Please use @ For email</string>
