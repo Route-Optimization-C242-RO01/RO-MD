@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import com.example.myrouteoptimization.data.source.datastore.UserPreference
 import com.example.myrouteoptimization.data.source.remote.response.DataItem
-import com.example.myrouteoptimization.data.source.remote.response.OptimizeResponse
 import com.example.myrouteoptimization.data.source.remote.response.RouteResponse
 import com.example.myrouteoptimization.data.source.remote.retrofit.ApiService
 import com.google.gson.Gson
@@ -93,17 +92,6 @@ class RouteRepository (
             val errorBody = Gson().fromJson(jsonInString, RouteResponse::class.java)
             val errorMessage = errorBody.message
             emit(Result.Error(errorMessage!!))
-        }
-    }
-
-    suspend fun optimizeRoute(request : ApiService.OptimizeRequest) : Result<OptimizeResponse> {
-        return try {
-            val response = apiService.optimizeRoute(request)
-            Result.Success(response)
-        } catch (e : HttpException) {
-            Result.Error(e.message() ?: "Network Exception occurred")
-        } catch (e : Exception) {
-            Result.Error(e.message ?: "Unexpected Error Occurred")
         }
     }
 

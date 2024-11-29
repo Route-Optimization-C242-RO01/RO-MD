@@ -18,7 +18,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDA8Gms6H15jvdrLusxTNj-xq92O80W8NU" />
+            android:value="AIzaSyCuOOmRlprYGF9TH9ABsN6fRHoKP70XqsA" />
 
         <activity
             android:name=".ui.register.RegisterActivity"
@@ -55,4 +55,5 @@
             android:exported="false"
             android:screenOrientation="portrait"/>
     </application>
+
 </manifest>
