@@ -22,7 +22,6 @@
         android:textSize="24sp"
         android:layout_marginStart="12dp"
         android:layout_marginBottom="8dp"
-        android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="@id/map"
         app:layout_constraintBottom_toTopOf="@id/route_distance"
         tools:text="@string/route_title" />

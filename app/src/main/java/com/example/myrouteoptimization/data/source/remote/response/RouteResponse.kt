@@ -62,7 +62,7 @@ data class DataDetailRouteRouteItem(
 	val latitude: String? = null,
 
 	@field:SerializedName("postal_code")
-	val postalCode: String? = null,
+	val postalCode: String,
 
 	@field:SerializedName("sequence")
 	val sequence: Int? = null,

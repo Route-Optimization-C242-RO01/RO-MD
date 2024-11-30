@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.myrouteoptimization.data.repository.RouteRepository
 import com.example.myrouteoptimization.di.Injection
+import com.example.myrouteoptimization.ui.addroute.AddRouteViewModel
 import com.example.myrouteoptimization.ui.detail.DetailViewModel
 import com.example.myrouteoptimization.ui.main.done.DoneViewModel
 import com.example.myrouteoptimization.ui.main.todo.TodoViewModel
@@ -22,6 +23,9 @@ class RouteViewModelFactory(private val routeRepository: RouteRepository) : View
             }
             modelClass.isAssignableFrom(DetailViewModel::class.java) -> {
                 DetailViewModel(routeRepository) as T
+            }
+            modelClass.isAssignableFrom(AddRouteViewModel::class.java) -> {
+                AddRouteViewModel(routeRepository) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }

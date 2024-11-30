@@ -3,11 +3,13 @@ package com.example.myrouteoptimization.ui.adddestination
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myrouteoptimization.data.source.remote.response.PostDataItem
 import com.example.myrouteoptimization.databinding.ActivityAddDestinationBinding
+import com.example.myrouteoptimization.utils.showToast
 
 class AddDestinationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddDestinationBinding
@@ -18,6 +20,10 @@ class AddDestinationActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupView()
+
+        val isFirstInput = intent.getBooleanExtra("IS_FIRST_INPUT", true)
+
+        binding.warningMessageDepot.visibility = if (isFirstInput) View.VISIBLE else View.GONE
 
         binding.submit.setOnClickListener {
             val street = binding.editTextStreet.text.toString()
@@ -38,26 +44,22 @@ class AddDestinationActivity : AppCompatActivity() {
                 setResult(RESULT_OK, Intent().putExtra("EXTRA_DESTINATION", itemData))
                 finish()
             } else {
+                showToast(this@AddDestinationActivity, "Input is not Completed")
+                if (binding.editTextStreet.text!!.isBlank()) {
+                    binding.layoutStreet.error = "Street is required"
+                 }
+                if (binding.editTextCity.text!!.isBlank()) {
+                    binding.layoutCity.error = "City is required"
+                }
+                if (binding.editTextProvince.text!!.isBlank()) {
+                    binding.layoutProvince.error = "Province is required"
+                }
+                if (binding.editTextPostalCode.text!!.isBlank()) {
+                    binding.layoutPostalCode.error = "Postal Code is required"
+                }
             }
         }
     }
-
-//    private fun showFormError() {
-//        // Tampilkan error di form jika input tidak valid
-//        if (binding.editTextStreet.text.isBlank()) {
-//            binding.layoutStreet.error = "Street is required"
-//        }
-//        if (binding.editTextCity.text.isBlank()) {
-//            binding.layoutCity.error = "City is required"
-//        }
-//        if (binding.editTextProvince.text.isBlank()) {
-//            binding.layoutProvince.error = "Province is required"
-//        }
-//        if (binding.editTextPostalCode.text.isBlank()) {
-//            binding.layoutPostalCode.error = "Postal Code is required"
-//        }
-//    }
-
 
     private fun setupView() {
         @Suppress("DEPRECATION")

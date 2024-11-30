@@ -12,10 +12,12 @@ class AddRouteAdapter(
 ) : RecyclerView.Adapter<AddRouteAdapter.AddRouteViewHolder>(){
     inner class AddRouteViewHolder(private val binding : ItemRowDestinationBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(item : PostDataItem, position: Int) {
-            binding.tvDestination.text = item.street
+            binding.tvDestination.text = if (position == 0) "${item.street} - Depot" else item.street
 
             binding.ivClear.setOnClickListener {
-                onDeleteClick(position)
+                if (position < destinationList.size) {
+                    onDeleteClick(position)
+                }
             }
         }
     }

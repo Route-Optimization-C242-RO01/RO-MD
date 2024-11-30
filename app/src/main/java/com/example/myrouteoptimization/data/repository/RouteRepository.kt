@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import com.example.myrouteoptimization.data.source.datastore.UserPreference
 import com.example.myrouteoptimization.data.source.remote.response.DataItem
+import com.example.myrouteoptimization.data.source.remote.response.OptimizeRequest
 import com.example.myrouteoptimization.data.source.remote.response.OptimizeResponse
 import com.example.myrouteoptimization.data.source.remote.response.RouteResponse
 import com.example.myrouteoptimization.data.source.remote.retrofit.ApiService
@@ -96,14 +97,15 @@ class RouteRepository (
         }
     }
 
-    suspend fun optimizeRoute(request : ApiService.OptimizeRequest) : Result<OptimizeResponse> {
-        return try {
+     fun optimizeRoute(request : OptimizeRequest) : LiveData<Result<OptimizeResponse>> = liveData {
+        emit(Result.Loading)
+        try {
             val response = apiService.optimizeRoute(request)
-            Result.Success(response)
+            emit(Result.Success(response))
         } catch (e : HttpException) {
-            Result.Error(e.message() ?: "Network Exception occurred")
+            emit(Result.Error(e.message() ?: "Network Exception occurred"))
         } catch (e : Exception) {
-            Result.Error(e.message ?: "Unexpected Error Occurred")
+            emit(Result.Error(e.message ?: "Unexpected Error Occurred"))
         }
     }
 
