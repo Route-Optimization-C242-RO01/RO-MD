@@ -46,7 +46,7 @@ class TodoAdapter : ListAdapter<DataItem, TodoAdapter.MyViewHolder>(DIFF_CALLBAC
         fun bind(route: DataItem){
             binding.tvRouteTitle.text = route.title
             binding.tvRouteDesc.text =
-                "Number of vehicles: ${route.numberOfVehicles} \n${
+                "Number of vehicles: ${route.numberOfVehicles} \nTotal Distance: ${
                     NumberFormat.getNumberInstance(
                         Locale("id", "ID")
                     ).format(route.totalDistance)

@@ -178,6 +178,7 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
                     }
                     is Result.Error -> {
                         binding.progressBar.visibility = View.GONE
+                        mMap.clear()
                     }
                 }
             }
