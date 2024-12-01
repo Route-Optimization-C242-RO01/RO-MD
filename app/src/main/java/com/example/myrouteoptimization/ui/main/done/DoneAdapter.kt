@@ -77,6 +77,9 @@ class DoneAdapter : ListAdapter<DataItem, DoneAdapter.MyViewHolder>(DIFF_CALLBAC
                     )
                 }
 
+                val hueStep = 30
+                var currentHue = 240f
+
                 for (i in dataRoute.indices) {
                     val latlng = dataRoute[i]!!.dataDetailRouteRoute
 
@@ -102,9 +105,14 @@ class DoneAdapter : ListAdapter<DataItem, DoneAdapter.MyViewHolder>(DIFF_CALLBAC
 
                         polylineOptions.add(depotLatLng)
 
+                        val newColor = Color.HSVToColor(
+                            floatArrayOf(currentHue, 1.0f, 1.0f)
+                        )
+                        currentHue = (currentHue + hueStep) % 360
+
                         googleMap.addPolyline(
                             polylineOptions
-                                .color(Color.BLUE)
+                                .color(newColor)
                                 .width(8f)
                         )
                     }
