@@ -50,16 +50,9 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
         setupMap()
         updateOptimizeButtonState()
 
-
-
         binding.addDestination.setOnClickListener {
             val intent = Intent(this, AddDestinationActivity::class.java)
             intent.putExtra(IS_FIRST_INPUT, destinationData.isEmpty())
-
-            if (destinationData.isNotEmpty()) intent.putExtra(IS_FIRST_DATA, destinationData.size)
-
-            binding.dataMessage.visibility = if (destinationData.isNotEmpty()) View.GONE else View.VISIBLE
-
             addDestinationLauncher.launch(intent)
         }
 
@@ -68,32 +61,35 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
             val vehicleCountText = binding.editTextRouteVehicles.text.toString()
             val vehicleCount = vehicleCountText.toInt()
 
-            if (vehicleCount <= 0) {
-                showToast(this, "Jumlah kendaraan harus ada")
-            }
             val request = OptimizeRequest(
                 numberOfVehicles = vehicleCount,
                 title = title,
                 data = destinationData
             )
+
             Log.d("AddRouteActivity", request.toString())
 
-            viewModel.optimizeRoute(request).observe(this) {result ->
-                when(result) {
-                    is Result.Loading -> {
-                        showToast(this@AddRouteActivity, "Mengoptimalkan Route")
-                    }
-                    is Result.Error -> {
-                        showToast(this@AddRouteActivity, "Gagal optimisasi rute")
-                        Log.d("Destination data : ", result.error)
-                    }
-                    is Result.Success -> {
-                        showToast(this@AddRouteActivity, "Rute berhasil dioptimalkan")
-                        destinationData.clear()
-                        adapter.notifyDataSetChanged()
+            if (title.isNotBlank() && vehicleCountText.isNotBlank() && vehicleCountText != "") {
+                viewModel.optimizeRoute(request).observe(this) {result ->
+                    when(result) {
+                        is Result.Loading -> {
+                            showToast(this@AddRouteActivity, "Mengoptimalkan Route")
+                        }
+                        is Result.Success -> {
+                            showToast(this@AddRouteActivity, "Rute berhasil dioptimalkan")
+                            destinationData.clear()
+                            adapter.notifyDataSetChanged()
+                        }
+                        is Result.Error -> {
+                            showToast(this@AddRouteActivity, "Gagal optimisasi rute, karena ${result.error}")
+                            Log.d("Destination data : ", result.error)
+                        }
                     }
                 }
+            } else {
+                showToast(this, "Input Title atau Vehicle count Harus diisi!")
             }
+
         }
     }
 
@@ -201,11 +197,11 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun updateOptimizeButtonState() {
+        binding.dataMessage.visibility = if (destinationData.size == 0) View.VISIBLE else View.GONE
         binding.optimizeRoute.isEnabled = destinationData.size > 2
     }
 
     companion object {
         const val IS_FIRST_INPUT = "is_first_input"
-        const val IS_FIRST_DATA = "is_first_data"
     }
 }

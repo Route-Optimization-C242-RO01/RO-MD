@@ -24,12 +24,13 @@ class DetailAdapter : ListAdapter<DataRouteResultsItem, DetailAdapter.MyViewHold
     class MyViewHolder(private val binding: ItemRowDetailBinding) : RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
         fun bind(route: DataRouteResultsItem){
-            binding.tvVehicle.text = "Vehicle ${route.vehicleSequence}"
+            binding.tvVehicle.text = "Vehicle ${route.vehicleSequence?.plus(1)}"
 
             val detail = route.dataDetailRouteRoute!!
             for (i in detail.indices) {
                 when (i) {
                     0 -> {
+                        @Suppress("KotlinConstantConditions")
                         binding.tvDesc.text =
                             binding.tvDesc.text.toString() + "${i + 1}. ${detail[i]?.street}, ${detail[i]?.city}, ${detail[i]?.province}, ${detail[i]?.postalCode}, Depot \n"
                     }
