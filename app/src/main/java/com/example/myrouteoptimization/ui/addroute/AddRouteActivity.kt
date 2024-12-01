@@ -1,7 +1,10 @@
 package com.example.myrouteoptimization.ui.addroute
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.location.Address
+import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -104,6 +107,7 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
                     destinationData.add(newRoute)
                     adapter.notifyItemInserted(destinationData.size - 1)
                     updateOptimizeButtonState()
+                    updateMapMarkers()
                 }
                 Log.d("Destination Data", destinationData.toString())
             }
@@ -116,6 +120,7 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
                 destinationData.removeAt(pos)
                 adapter.notifyItemRemoved(pos)
                 updateOptimizeButtonState()
+                updateMapMarkers()
             }
         }
 
@@ -147,68 +152,38 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun updateMapMarkers() {
-        gMaps?.clear()
         for (item in destinationData) {
-            val address = item.street
+            val address = "${item.street}, ${item.city}, ${item.postalCode}"
 
-            getLatLngFromAddress(address) { latLng ->
-                latLng?.let {
-                    gMaps?.addMarker(
-                        MarkerOptions()
-                            .position(it)
-                            .title(address)
-                    )
-                    gMaps?.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 12f))
-                }
+            val latLngData = getLatLngFromAddress(this, address)
+            Log.d("latlngStreet", latLngData.toString())
+            latLngData?.let {
+                gMaps?.addMarker(
+                    MarkerOptions()
+                        .position(it)
+                        .title(item.street)
+                )
+                gMaps?.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 12f))
             }
         }
     }
 
-    private fun getLatLngFromAddress(address: String, callback: (LatLng?) -> Unit) {
-        val apiKey = "AIzaSyDA8Gms6H15jvdrLusxTNj-xq92O80W8NU"
-        val encodedAddress = URLEncoder.encode(address, "UTF-8")
-        val url = "https://maps.googleapis.com/maps/api/geocode/json?address=$encodedAddress&key=$apiKey"
 
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .build()
-
-        val request = Request.Builder()
-            .url(url)
-            .build()
-
-        client.newCall(request).enqueue(object : okhttp3.Callback {
-            override fun onFailure(call: okhttp3.Call, e: IOException) {
-                e.printStackTrace()
-                callback(null)
+    @Suppress("DEPRECATION")
+    private fun getLatLngFromAddress(context : Context, mAddress : String) : LatLng? {
+        val coder = Geocoder(context)
+        return try {
+            val addresses : List<Address> = coder.getFromLocationName(mAddress, 1) as List<Address>
+            if(addresses.isNotEmpty()) {
+                val location = addresses[0]
+                LatLng(location.latitude, location.longitude)
+            } else {
+                null
             }
-
-            override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
-                if (!response.isSuccessful) {
-                    callback(null)
-                    return
-                }
-
-                response.body?.string()?.let { responseBody ->
-                    try {
-                        val json = JSONObject(responseBody)
-                        val location = json.getJSONArray("results")
-                            .getJSONObject(0)
-                            .getJSONObject("geometry")
-                            .getJSONObject("location")
-
-                        val lat = location.getDouble("lat")
-                        val lng = location.getDouble("lng")
-
-                        callback(LatLng(lat, lng))
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        callback(null)
-                    }
-                }
-            }
-        })
+        } catch (e : Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
     private fun updateOptimizeButtonState() {
