@@ -137,6 +137,9 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
                                     .snippet("Depot")
                             )
 
+                            val hueStep = 30
+                            var currentHue = 240f
+
                             for (i in dataRoute.indices) {
                                 val latlng = dataRoute[i]!!.dataDetailRouteRoute
 
@@ -163,9 +166,14 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
 
                                 polylineOptions.add(depotLatLng)
 
+                                val newColor = Color.HSVToColor(
+                                    floatArrayOf(currentHue, 1.0f, 1.0f)
+                                )
+                                currentHue = (currentHue + hueStep) % 360
+
                                 mMap.addPolyline(
                                     polylineOptions
-                                        .color(Color.BLUE)
+                                        .color(newColor)
                                         .width(8f)
                                 )
 
@@ -174,6 +182,7 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
                     }
                     is Result.Error -> {
                         binding.progressBar.visibility = View.GONE
+                        mMap.clear()
                     }
                 }
             }

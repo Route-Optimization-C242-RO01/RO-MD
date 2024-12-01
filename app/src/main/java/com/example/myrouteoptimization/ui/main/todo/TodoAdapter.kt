@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.view.ViewGroup
 import android.content.Intent
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -44,7 +46,7 @@ class TodoAdapter : ListAdapter<DataItem, TodoAdapter.MyViewHolder>(DIFF_CALLBAC
         fun bind(route: DataItem){
             binding.tvRouteTitle.text = route.title
             binding.tvRouteDesc.text =
-                "Number of vehicles: ${route.numberOfVehicles} \nTotal Distance : ${
+                "Number of vehicles: ${route.numberOfVehicles} \nTotal Distance: ${
                     NumberFormat.getNumberInstance(
                         Locale("id", "ID")
                     ).format(route.totalDistance)
@@ -74,6 +76,9 @@ class TodoAdapter : ListAdapter<DataItem, TodoAdapter.MyViewHolder>(DIFF_CALLBAC
                     )
                 }
 
+                val hueStep = 30
+                var currentHue = 240f
+
                 for (i in dataRoute.indices) {
                     val latlng = dataRoute[i]!!.dataDetailRouteRoute
 
@@ -99,9 +104,14 @@ class TodoAdapter : ListAdapter<DataItem, TodoAdapter.MyViewHolder>(DIFF_CALLBAC
 
                         polylineOptions.add(depotLatLng)
 
+                        val newColor = Color.HSVToColor(
+                            floatArrayOf(currentHue, 1.0f, 1.0f)
+                        )
+                        currentHue = (currentHue + hueStep) % 360
+
                         googleMap.addPolyline(
                             polylineOptions
-                                .color(Color.BLUE)
+                                .color(newColor)
                                 .width(8f)
                         )
                     }
