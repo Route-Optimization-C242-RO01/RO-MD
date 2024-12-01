@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
@@ -115,7 +114,6 @@ class DetailActivity : AppCompatActivity(), OnMapReadyCallback {
                                     depot.latitude!!.toDouble(),
                                     depot.longitude!!.toDouble()
                                 )
-                            Log.d("Abc DetailActivity", depotLatLng.toString())
 
                             mMap.moveCamera(
                                 CameraUpdateFactory.newLatLngZoom(

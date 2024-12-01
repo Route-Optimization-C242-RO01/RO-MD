@@ -16,7 +16,6 @@
     <string name="postal_code">Postal Code</string>
     <string name="kg">Kg</string>
     <string name="submit">Submit</string>
-    <string name="direction">Direction</string>
     <string name="done">Done</string>
     <string name="title_login_page">Log In</string>
     <string name="password">Password</string>
@@ -37,6 +36,5 @@
     <string name="error">Error</string>
 
 <!--    Input Error -->
-    <string name="false_email_pattern">Please use @ For email</string>
     <string name="required_password_length_message">Password must be at least 8 Character</string>
 </resources>

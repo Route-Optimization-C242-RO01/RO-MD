@@ -28,15 +28,19 @@ class DetailAdapter : ListAdapter<DataRouteResultsItem, DetailAdapter.MyViewHold
 
             val detail = route.dataDetailRouteRoute!!
             for (i in detail.indices) {
-                if (i == 0) {
-                    binding.tvDesc.text =
-                        binding.tvDesc.text.toString() + "${i + 1}. ${detail[i]?.street}, ${detail[i]?.city}, ${detail[i]?.province}, ${detail[i]?.postalCode}, Depot \n"
-                } else if (i == detail.lastIndex) {
-                    binding.tvDesc.text =
-                        binding.tvDesc.text.toString() + "${i + 1}. ${detail[i]?.street}, ${detail[i]?.city}, ${detail[i]?.province}, ${detail[i]?.postalCode}, Depot \n"
-                } else {
-                    binding.tvDesc.text =
-                        binding.tvDesc.text.toString() + "${i + 1}. ${detail[i]?.street}, ${detail[i]?.city}, ${detail[i]?.province}, ${detail[i]?.postalCode}, ${detail[i]?.demand} kg \n"
+                when (i) {
+                    0 -> {
+                        binding.tvDesc.text =
+                            binding.tvDesc.text.toString() + "1. ${detail[i]?.street}, ${detail[i]?.city}, ${detail[i]?.province}, ${detail[i]?.postalCode}, Depot \n"
+                    }
+                    detail.lastIndex -> {
+                        binding.tvDesc.text =
+                            binding.tvDesc.text.toString() + "${i + 1}. ${detail[i]?.street}, ${detail[i]?.city}, ${detail[i]?.province}, ${detail[i]?.postalCode}, Depot \n"
+                    }
+                    else -> {
+                        binding.tvDesc.text =
+                            binding.tvDesc.text.toString() + "${i + 1}. ${detail[i]?.street}, ${detail[i]?.city}, ${detail[i]?.province}, ${detail[i]?.postalCode}, ${detail[i]?.demand} kg \n"
+                    }
                 }
             }
         }

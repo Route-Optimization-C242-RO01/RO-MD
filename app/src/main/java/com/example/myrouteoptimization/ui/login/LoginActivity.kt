@@ -58,7 +58,7 @@ class LoginActivity : AppCompatActivity() {
             val name = binding.editTextUsername.text.toString()
             val pass = binding.editTextPassword.text.toString()
 
-            if (name.isNotEmpty() && pass.length >= 8) {
+            if (name.isNotEmpty() && pass.length >= 4) {
                 binding.buttonError.visibility = View.GONE
 
                 lifecycleScope.launch {

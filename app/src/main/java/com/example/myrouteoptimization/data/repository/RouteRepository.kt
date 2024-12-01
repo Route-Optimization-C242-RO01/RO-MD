@@ -2,7 +2,6 @@ package com.example.myrouteoptimization.data.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
-import com.example.myrouteoptimization.data.source.datastore.UserPreference
 import com.example.myrouteoptimization.data.source.remote.response.DataItem
 import com.example.myrouteoptimization.data.source.remote.response.OptimizeRequest
 import com.example.myrouteoptimization.data.source.remote.response.OptimizeResponse
