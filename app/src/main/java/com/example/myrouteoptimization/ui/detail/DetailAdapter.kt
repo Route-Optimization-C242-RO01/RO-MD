@@ -2,25 +2,12 @@ package com.example.myrouteoptimization.ui.detail
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
-import android.content.Intent
-import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myrouteoptimization.R
 import com.example.myrouteoptimization.data.source.remote.response.DataRouteResultsItem
 import com.example.myrouteoptimization.databinding.ItemRowDetailBinding
-import com.example.myrouteoptimization.ui.detail.DetailActivity
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolylineOptions
-import java.text.NumberFormat
-import java.util.Locale
 
 class DetailAdapter : ListAdapter<DataRouteResultsItem, DetailAdapter.MyViewHolder>(DIFF_CALLBACK) {
 
