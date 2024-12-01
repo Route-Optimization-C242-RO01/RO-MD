@@ -21,7 +21,6 @@ class UserPreference private constructor(private val dataStore: DataStore<Prefer
             preferences[USERNAME_KEY] = user.username
             preferences[TOKEN_KEY] = user.token
             preferences[IS_LOGIN_KEY] = true
-            Log.d("Abc UserPref", user.token)
         }
     }
 
