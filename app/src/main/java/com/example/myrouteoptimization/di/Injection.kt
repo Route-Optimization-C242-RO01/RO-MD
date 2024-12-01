@@ -9,17 +9,6 @@ import com.example.myrouteoptimization.data.source.remote.retrofit.ApiConfig
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
-/**
- * A singleton object that provides dependency injection for various repositories.
- *
- * The `Injection` object contains methods to provide instances of different repositories
- * used within the application. These methods are typically used to inject dependencies
- * into various parts of the application, such as ViewModels or other components, to
- * manage the data layer efficiently.
- *
- * This approach helps in decoupling the components and makes the application more testable
- * and maintainable.
- */
 object Injection {
     fun provideUserRepository(context: Context): UserRepository {
         val pref = UserPreference.getInstance(context.dataStore)
@@ -32,6 +21,6 @@ object Injection {
         val pref = UserPreference.getInstance(context.dataStore)
         val user = runBlocking { pref.getSession().first() }
         val apiService = ApiConfig.getApiService(user.token)
-        return RouteRepository.getInstance(pref, apiService)
+        return RouteRepository.getInstance(apiService)
     }
 }

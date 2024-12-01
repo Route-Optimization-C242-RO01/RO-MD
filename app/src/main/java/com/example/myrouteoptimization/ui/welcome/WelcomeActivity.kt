@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.myrouteoptimization.databinding.ActivityWelcomeBinding
 import com.example.myrouteoptimization.ui.AuthViewModelFactory
 import com.example.myrouteoptimization.ui.login.LoginActivity
-import com.example.myrouteoptimization.ui.login.LoginViewModel
 import com.example.myrouteoptimization.ui.main.MainActivity
 import com.example.myrouteoptimization.ui.register.RegisterActivity
 

@@ -1,22 +1,15 @@
 package com.example.myrouteoptimization.ui.main.done
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myrouteoptimization.R
 import com.example.myrouteoptimization.databinding.FragmentDoneBinding
 import com.example.myrouteoptimization.ui.RouteViewModelFactory
-import com.example.myrouteoptimization.ui.addroute.AddRouteActivity
-import com.example.myrouteoptimization.ui.main.todo.TodoAdapter
-import com.example.myrouteoptimization.ui.main.todo.TodoViewModel
 import com.example.myrouteoptimization.utils.Result
-import com.example.myrouteoptimization.utils.showToast
 
 class DoneFragment : Fragment() {
 

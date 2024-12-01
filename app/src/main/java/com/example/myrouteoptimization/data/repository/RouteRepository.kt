@@ -1,6 +1,5 @@
 package com.example.myrouteoptimization.data.repository
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import com.example.myrouteoptimization.data.source.datastore.UserPreference
@@ -14,7 +13,6 @@ import retrofit2.HttpException
 import com.example.myrouteoptimization.utils.Result
 
 class RouteRepository (
-    private val userPreference: UserPreference,
     private val apiService: ApiService
 ) {
     fun getUnfinishedRoute(): LiveData<Result<List<DataItem>>> = liveData {
@@ -113,11 +111,10 @@ class RouteRepository (
     @Volatile
     private var instance: RouteRepository? = null
     fun getInstance(
-        userPreference: UserPreference,
         apiService: ApiService
     ): RouteRepository =
         instance ?: synchronized(this) {
-            instance ?: RouteRepository(userPreference, apiService)
+            instance ?: RouteRepository(apiService)
         }.also { instance = it }
     }
 }

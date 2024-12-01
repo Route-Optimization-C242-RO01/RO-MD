@@ -59,7 +59,8 @@
             card_view:layout_constraintStart_toEndOf="@id/tv_route_title"
             card_view:layout_constraintTop_toTopOf="parent"
             android:src="@drawable/ic_check_24dp"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

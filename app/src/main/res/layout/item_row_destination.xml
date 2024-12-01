@@ -19,7 +19,7 @@
             android:id="@+id/tv_destination"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="12sp"
             android:layout_margin="8dp"
             card_view:layout_constraintStart_toStartOf="parent"
             card_view:layout_constraintEnd_toStartOf="@id/iv_clear"
@@ -36,7 +36,8 @@
             card_view:layout_constraintStart_toEndOf="@id/tv_destination"
             card_view:layout_constraintEnd_toEndOf="parent"
             card_view:layout_constraintTop_toTopOf="parent"
-            card_view:layout_constraintBottom_toBottomOf="parent"/>
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            tools:ignore="ContentDescription" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import android.view.ViewGroup
 import android.content.Intent
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -46,7 +44,7 @@ class TodoAdapter : ListAdapter<DataItem, TodoAdapter.MyViewHolder>(DIFF_CALLBAC
         fun bind(route: DataItem){
             binding.tvRouteTitle.text = route.title
             binding.tvRouteDesc.text =
-                "Number of vehicles: ${route.numberOfVehicles} \n${
+                "Number of vehicles: ${route.numberOfVehicles} \nTotal Distance : ${
                     NumberFormat.getNumberInstance(
                         Locale("id", "ID")
                     ).format(route.totalDistance)

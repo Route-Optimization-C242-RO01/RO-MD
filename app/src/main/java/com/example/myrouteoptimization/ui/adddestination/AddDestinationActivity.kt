@@ -9,8 +9,11 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myrouteoptimization.data.source.remote.response.PostDataItem
 import com.example.myrouteoptimization.databinding.ActivityAddDestinationBinding
+import com.example.myrouteoptimization.ui.addroute.AddRouteActivity
+import com.example.myrouteoptimization.utils.showMaterialDialog
 import com.example.myrouteoptimization.utils.showToast
 
+@Suppress("DEPRECATION")
 class AddDestinationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddDestinationBinding
 
@@ -21,7 +24,12 @@ class AddDestinationActivity : AppCompatActivity() {
 
         setupView()
 
-        val isFirstInput = intent.getBooleanExtra("IS_FIRST_INPUT", true)
+        val isFirstInput = intent.getBooleanExtra(AddRouteActivity.IS_FIRST_INPUT, true)
+        val destinationDataSize = intent.getIntExtra(AddRouteActivity.IS_FIRST_DATA, 0)
+
+        if (destinationDataSize == 1) {
+            showMaterialDialog(this@AddDestinationActivity, "Input Destinasi", "jika terdapat lebih dari 1 kendaraan, pastikan Destinasi lebih atau sama dengan 10 destinasi agar optimisasi lebih optimal", "OK")
+        }
 
         binding.warningMessageDepot.visibility = if (isFirstInput) View.VISIBLE else View.GONE
 

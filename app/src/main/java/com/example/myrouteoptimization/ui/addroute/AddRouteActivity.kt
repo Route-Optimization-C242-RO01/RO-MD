@@ -8,6 +8,7 @@ import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,7 +20,6 @@ import com.example.myrouteoptimization.data.source.remote.response.PostDataItem
 import com.example.myrouteoptimization.databinding.ActivityAddRouteBinding
 import com.example.myrouteoptimization.ui.RouteViewModelFactory
 import com.example.myrouteoptimization.ui.adddestination.AddDestinationActivity
-import com.example.myrouteoptimization.ui.main.MainActivity
 import com.example.myrouteoptimization.utils.Result
 import com.example.myrouteoptimization.utils.showToast
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -28,13 +28,8 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.json.JSONObject
-import java.io.IOException
-import java.net.URLEncoder
-import java.util.concurrent.TimeUnit
 
+@Suppress("DEPRECATION")
 class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityAddRouteBinding
     private lateinit var adapter: AddRouteAdapter
@@ -55,9 +50,16 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
         setupMap()
         updateOptimizeButtonState()
 
+
+
         binding.addDestination.setOnClickListener {
             val intent = Intent(this, AddDestinationActivity::class.java)
-            intent.putExtra("IS_FIRST_INPUT", destinationData.isEmpty())
+            intent.putExtra(IS_FIRST_INPUT, destinationData.isEmpty())
+
+            if (destinationData.isNotEmpty()) intent.putExtra(IS_FIRST_DATA, destinationData.size)
+
+            binding.dataMessage.visibility = if (destinationData.isNotEmpty()) View.GONE else View.VISIBLE
+
             addDestinationLauncher.launch(intent)
         }
 
@@ -89,14 +91,12 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
                         showToast(this@AddRouteActivity, "Rute berhasil dioptimalkan")
                         destinationData.clear()
                         adapter.notifyDataSetChanged()
-                        startActivity(Intent(this, MainActivity::class.java))
                     }
                 }
             }
         }
     }
 
-    @Suppress("DEPRECATION")
     private val addDestinationLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { res ->
@@ -108,6 +108,8 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
                     adapter.notifyItemInserted(destinationData.size - 1)
                     updateOptimizeButtonState()
                     updateMapMarkers()
+
+
                 }
                 Log.d("Destination Data", destinationData.toString())
             }
@@ -115,21 +117,33 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun setupRv() {
-        adapter = AddRouteAdapter(destinationData) { pos ->
-            if (pos >= 0 && pos < destinationData.size) {
-                destinationData.removeAt(pos)
-                adapter.notifyItemRemoved(pos)
-                updateOptimizeButtonState()
-                updateMapMarkers()
+        adapter = AddRouteAdapter(
+            destinationList = destinationData,
+            onDeleteClick = { pos ->
+                if (pos >= 0 && pos < destinationData.size) {
+                    destinationData.removeAt(pos)
+                    adapter.notifyItemRemoved(pos)
+                    updateOptimizeButtonState()
+                    updateMapMarkers()
+                }
+            },
+            onItemClicked = { item ->
+                val address = "${item.street}, ${item.city}, ${item.postalCode}"
+                val latLngData = getLatLngFromAddress(this, address)
+
+                latLngData?.let {
+                    gMaps?.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 10f))
+                }
             }
-        }
+        )
 
         binding.rvListDestination.layoutManager = LinearLayoutManager(this)
         binding.rvListDestination.adapter = adapter
     }
 
+
+
     private fun setupView() {
-        @Suppress("DEPRECATION")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.insetsController?.hide(WindowInsets.Type.statusBars())
         } else {
@@ -152,24 +166,24 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun updateMapMarkers() {
-        for (item in destinationData) {
+        for ((index, item) in destinationData.withIndex()) {
             val address = "${item.street}, ${item.city}, ${item.postalCode}"
 
             val latLngData = getLatLngFromAddress(this, address)
-            Log.d("latlngStreet", latLngData.toString())
             latLngData?.let {
-                gMaps?.addMarker(
-                    MarkerOptions()
-                        .position(it)
-                        .title(item.street)
-                )
-                gMaps?.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 12f))
+                val markerOptions = MarkerOptions()
+                    .position(it)
+                    .title(item.street)
+
+                if(index == 0) markerOptions.snippet("DEPOT") else markerOptions.snippet("Destination $index")
+
+                gMaps?.addMarker(markerOptions)
+
+                gMaps?.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 8f))
             }
         }
     }
 
-
-    @Suppress("DEPRECATION")
     private fun getLatLngFromAddress(context : Context, mAddress : String) : LatLng? {
         val coder = Geocoder(context)
         return try {
@@ -188,5 +202,10 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun updateOptimizeButtonState() {
         binding.optimizeRoute.isEnabled = destinationData.size > 2
+    }
+
+    companion object {
+        const val IS_FIRST_INPUT = "is_first_input"
+        const val IS_FIRST_DATA = "is_first_data"
     }
 }

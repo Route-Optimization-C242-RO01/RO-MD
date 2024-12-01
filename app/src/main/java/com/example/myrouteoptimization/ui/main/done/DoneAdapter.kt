@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.view.ViewGroup
 import android.content.Intent
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.recyclerview.widget.DiffUtil
@@ -47,7 +46,7 @@ class DoneAdapter : ListAdapter<DataItem, DoneAdapter.MyViewHolder>(DIFF_CALLBAC
             binding.ivCheck.visibility = View.VISIBLE
             binding.tvRouteTitle.text = route.title
             binding.tvRouteDesc.text =
-                "Number of vehicles: ${route.numberOfVehicles} \n${
+                "Number of vehicles: ${route.numberOfVehicles} \n Total Distance : ${
                     NumberFormat.getNumberInstance(
                         Locale("id", "ID")
                     ).format(route.totalDistance)
