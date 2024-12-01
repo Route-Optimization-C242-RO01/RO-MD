@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyRouteOptimization</string>
+    <string name="app_name">LogiNest</string>
     <string name="title_todo">ToDo</string>
     <string name="title_done">Done</string>
     <string name="title_profile">Profile</string>

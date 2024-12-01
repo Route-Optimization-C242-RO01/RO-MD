@@ -32,7 +32,7 @@ data class OptimizeResponseData(
 	val numberOfVehicles: Int,
 
 	@field:SerializedName("total_distance")
-	val totalDistance: Int,
+	val totalDistance: Float,
 
 	@field:SerializedName("title")
 	val title: String,

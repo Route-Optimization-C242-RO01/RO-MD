@@ -30,8 +30,9 @@ class DetailAdapter : ListAdapter<DataRouteResultsItem, DetailAdapter.MyViewHold
             for (i in detail.indices) {
                 when (i) {
                     0 -> {
+                        @Suppress("KotlinConstantConditions")
                         binding.tvDesc.text =
-                            binding.tvDesc.text.toString() + "1. ${detail[i]?.street}, ${detail[i]?.city}, ${detail[i]?.province}, ${detail[i]?.postalCode}, Depot \n"
+                            binding.tvDesc.text.toString() + "${i + 1}. ${detail[i]?.street}, ${detail[i]?.city}, ${detail[i]?.province}, ${detail[i]?.postalCode}, Depot \n"
                     }
                     detail.lastIndex -> {
                         binding.tvDesc.text =
