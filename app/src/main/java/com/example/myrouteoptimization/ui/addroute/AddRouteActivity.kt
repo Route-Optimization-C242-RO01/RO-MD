@@ -73,14 +73,17 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
                 viewModel.optimizeRoute(request).observe(this) {result ->
                     when(result) {
                         is Result.Loading -> {
+                            binding.progressBarOptimize.visibility = View.VISIBLE
                             showToast(this@AddRouteActivity, "Mengoptimalkan Route")
                         }
                         is Result.Success -> {
+                            binding.progressBarOptimize.visibility = View.GONE
                             showToast(this@AddRouteActivity, "Rute berhasil dioptimalkan")
                             destinationData.clear()
                             adapter.notifyDataSetChanged()
                         }
                         is Result.Error -> {
+                            binding.progressBarOptimize.visibility = View.GONE
                             showToast(this@AddRouteActivity, "Gagal optimisasi rute, karena ${result.error}")
                             Log.d("Destination data : ", result.error)
                         }
@@ -89,7 +92,6 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
             } else {
                 showToast(this, "Input Title atau Vehicle count Harus diisi!")
             }
-
         }
     }
 

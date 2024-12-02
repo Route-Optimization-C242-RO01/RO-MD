@@ -49,8 +49,10 @@ class AddDestinationActivity : AppCompatActivity() {
 
             if (street.isNotBlank() && city.isNotBlank() && province.isNotBlank() && postalCode.isNotBlank()) {
 
+                val kgValue = kg.toIntOrNull()
+
                 binding.layoutKg.apply {
-                    if (kg >= "120") {
+                    if (kgValue != null && kgValue >= 120) {
                         error = "Kapasitas setiap kendaraan tidak boleh lebih dari 120kg"
                         return@setOnClickListener
                     } else {
