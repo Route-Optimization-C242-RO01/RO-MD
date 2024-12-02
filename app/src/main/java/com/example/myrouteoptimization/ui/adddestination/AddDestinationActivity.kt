@@ -52,8 +52,8 @@ class AddDestinationActivity : AppCompatActivity() {
                 val kgValue = kg.toIntOrNull()
 
                 binding.layoutKg.apply {
-                    if (kgValue != null && kgValue >= 120) {
-                        error = "Vehicle Capacity must have less than 120kg"
+                    if (kgValue != null && kgValue > 120) {
+                        error = "Vehicle Capacity must have less than or equals 120kg"
                         return@setOnClickListener
                     } else {
                         error = null
