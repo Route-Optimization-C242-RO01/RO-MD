@@ -32,7 +32,9 @@
     <string name="route_vehicles_form">Number of vehicles</string>
     <string name="route_title_form">Title</string>
     <string name="route_vehicle">Vehicle 1</string>
-    <string name="route_desc">... Street</string>
+    <string name="route_desc">… Street</string>
+    <string name="warning_message">The first Time input is the depot location</string>
+    <string name="Refresh">Refresh </string>
     <string name="error">Error</string>
 
 <!--    Input Error -->

@@ -7,7 +7,6 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
@@ -67,30 +66,28 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
                 data = destinationData
             )
 
-            Log.d("AddRouteActivity", request.toString())
-
             if (title.isNotBlank() && vehicleCountText.isNotBlank() && vehicleCountText != "") {
                 viewModel.optimizeRoute(request).observe(this) {result ->
                     when(result) {
                         is Result.Loading -> {
                             binding.progressBarOptimize.visibility = View.VISIBLE
-                            showToast(this@AddRouteActivity, "Mengoptimalkan Route")
+                            showToast(this@AddRouteActivity, "Optimizing Route....")
                         }
                         is Result.Success -> {
                             binding.progressBarOptimize.visibility = View.GONE
-                            showToast(this@AddRouteActivity, "Rute berhasil dioptimalkan")
+                            showToast(this@AddRouteActivity, "Success Optimize Route")
                             destinationData.clear()
                             adapter.notifyDataSetChanged()
+                            finish()
                         }
                         is Result.Error -> {
                             binding.progressBarOptimize.visibility = View.GONE
-                            showToast(this@AddRouteActivity, "Gagal optimisasi rute, karena ${result.error}")
-                            Log.d("Destination data : ", result.error)
+                            showToast(this@AddRouteActivity, "Failed to optimize route because ${result.error}")
                         }
                     }
                 }
             } else {
-                showToast(this, "Input Title atau Vehicle count Harus diisi!")
+                showToast(this, "Title Input must be Filled!")
             }
         }
     }
@@ -106,10 +103,7 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
                     adapter.notifyItemInserted(destinationData.size - 1)
                     updateOptimizeButtonState()
                     updateMapMarkers()
-
-
                 }
-                Log.d("Destination Data", destinationData.toString())
             }
         }
     }
@@ -199,8 +193,10 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun updateOptimizeButtonState() {
-        binding.dataMessage.visibility = if (destinationData.size == 0) View.VISIBLE else View.GONE
-        binding.optimizeRoute.isEnabled = destinationData.size > 2
+        binding.apply {
+            dataMessage.visibility = if (destinationData.size == 0) View.VISIBLE else View.GONE
+            optimizeRoute.isEnabled = destinationData.size > 2
+        }
     }
 
     companion object {

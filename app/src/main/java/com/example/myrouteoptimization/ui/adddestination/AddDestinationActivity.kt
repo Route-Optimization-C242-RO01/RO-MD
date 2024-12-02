@@ -53,7 +53,7 @@ class AddDestinationActivity : AppCompatActivity() {
 
                 binding.layoutKg.apply {
                     if (kgValue != null && kgValue >= 120) {
-                        error = "Kapasitas setiap kendaraan tidak boleh lebih dari 120kg"
+                        error = "Vehicle Capacity must have less than 120kg"
                         return@setOnClickListener
                     } else {
                         error = null

@@ -150,7 +150,7 @@ class DetailActivity : AppCompatActivity(), OnMapReadyCallback {
                                         MarkerOptions()
                                             .position(currentLatLng)
                                             .title("${latlng[j]?.street}, ${latlng[j]?.city}, ${latlng[j]?.province}, ${latlng[j]?.postalCode}")
-                                            .snippet("${dataRoute[i]?.vehicleSequence}, ${latlng[j]?.demand} kg")
+                                            .snippet("${dataRoute[i]?.vehicleSequence?.plus(1)}, ${latlng[j]?.demand} kg")
                                     )
 
                                     polylineOptions.add(currentLatLng)

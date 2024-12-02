@@ -29,7 +29,7 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
 
     private var _binding: FragmentTodoBinding? = null
     private val binding get() = _binding!!
-
+    private val routeAdapter = TodoAdapter()
     private lateinit var factory: RouteViewModelFactory
     private val viewModel: TodoViewModel by viewModels {
         factory
@@ -48,7 +48,6 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
         return root
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -57,14 +56,12 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
 
+        observeData()
+
         binding.ivAddRoute.setOnClickListener {
             val intent = Intent(requireContext(), AddRouteActivity::class.java)
             startActivity(intent)
         }
-
-        val routeAdapter = TodoAdapter()
-
-        routeAdapter.notifyDataSetChanged()
 
         binding.rvRoute.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -72,6 +69,13 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
             adapter = routeAdapter
         }
 
+        binding.refresh.setOnClickListener {
+            observeData()
+        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun observeData() {
         viewModel.getUnfinishedRoute().observe(viewLifecycleOwner) { result ->
             if (result != null) {
                 when (result) {
@@ -82,6 +86,7 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
                         binding.progressBar2.visibility = View.GONE
                         val data = result.data
                         routeAdapter.submitList(data)
+                        routeAdapter.notifyDataSetChanged()
                     }
                     is Result.Error -> {
                         binding.progressBar2.visibility = View.GONE
@@ -91,6 +96,7 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
                 }
             }
         }
+
     }
 
     @SuppressLint("SetTextI18n")
@@ -158,9 +164,8 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
                                         MarkerOptions()
                                             .position(currentLatLng)
                                             .title("${latlng[j]?.street}, ${latlng[j]?.city}, ${latlng[j]?.province}, ${latlng[j]?.postalCode}")
-                                            .snippet("${dataRoute[i]?.vehicleSequence}, ${latlng[j]?.demand} kg")
+                                            .snippet("${dataRoute[i]?.vehicleSequence?.plus(1)}, ${latlng[j]?.demand} kg")
                                     )
-
                                     polylineOptions.add(currentLatLng)
                                 }
 
