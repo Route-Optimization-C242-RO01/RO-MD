@@ -15,6 +15,7 @@
         android:text="@string/warning_message"
         android:textColor="@color/md_theme_error_mediumContrast"
         android:textStyle="bold"
+        android:gravity="center"
         app:layout_constraintBottom_toTopOf="@+id/layout_street"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
