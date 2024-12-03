@@ -74,7 +74,6 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun observeData() {
         viewModel.getUnfinishedRoute().observe(viewLifecycleOwner) { result ->
             if (result != null) {
@@ -86,7 +85,6 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
                         binding.progressBar2.visibility = View.GONE
                         val data = result.data
                         routeAdapter.submitList(data)
-                        routeAdapter.notifyDataSetChanged()
                     }
                     is Result.Error -> {
                         binding.progressBar2.visibility = View.GONE

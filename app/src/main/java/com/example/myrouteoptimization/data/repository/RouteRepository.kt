@@ -100,7 +100,9 @@ class RouteRepository (
             val response = apiService.optimizeRoute(request)
             emit(Result.Success(response))
         } catch (e : HttpException) {
-            emit(Result.Error(e.message() ?: "Network Exception occurred"))
+            val errorRes = e.response()?.errorBody()?.string()
+            val parseError = Gson().fromJson(errorRes, OptimizeResponse::class.java)
+            emit(Result.Error(parseError.message))
         } catch (e : Exception) {
             emit(Result.Error(e.message ?: "Unexpected Error Occurred"))
         }

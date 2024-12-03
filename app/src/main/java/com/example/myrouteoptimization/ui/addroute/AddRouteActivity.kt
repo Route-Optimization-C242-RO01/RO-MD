@@ -56,9 +56,25 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         binding.optimizeRoute.setOnClickListener {
-            val title = binding.editTextRouteTitle.text.toString()
-            val vehicleCountText = binding.editTextRouteVehicles.text.toString()
-            val vehicleCount = vehicleCountText.toInt()
+            val title = binding.editTextRouteTitle.text.toString().trim()
+            val vehicleCountText = binding.editTextRouteVehicles.text.toString().trim()
+
+            if (title.isBlank()) {
+                showToast(this, "Title Input must be Filled!")
+                return@setOnClickListener
+            }
+
+            if (vehicleCountText.isBlank()) {
+                showToast(this, "Please enter the number of vehicles!")
+                return@setOnClickListener
+            }
+
+            val vehicleCount = try {
+                vehicleCountText.toInt()
+            } catch (e: NumberFormatException) {
+                showToast(this, "Invalid number format for vehicles!")
+                return@setOnClickListener
+            }
 
             val request = OptimizeRequest(
                 numberOfVehicles = vehicleCount,
@@ -66,28 +82,25 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
                 data = destinationData
             )
 
-            if (title.isNotBlank() && vehicleCountText.isNotBlank() && vehicleCountText != "") {
-                viewModel.optimizeRoute(request).observe(this) {result ->
-                    when(result) {
-                        is Result.Loading -> {
-                            binding.progressBarOptimize.visibility = View.VISIBLE
-                            showToast(this@AddRouteActivity, "Optimizing Route....")
-                        }
-                        is Result.Success -> {
-                            binding.progressBarOptimize.visibility = View.GONE
-                            showToast(this@AddRouteActivity, "Success Optimize Route")
-                            destinationData.clear()
-                            adapter.notifyDataSetChanged()
-                            finish()
-                        }
-                        is Result.Error -> {
-                            binding.progressBarOptimize.visibility = View.GONE
-                            showToast(this@AddRouteActivity, "Failed to optimize route because ${result.error}")
-                        }
+            viewModel.optimizeRoute(request).observe(this) { result ->
+                when (result) {
+                    is Result.Loading -> {
+                        binding.progressBarOptimize.visibility = View.VISIBLE
+                        showToast(this@AddRouteActivity, "Optimizing Route....")
+                    }
+                    is Result.Success -> {
+                        binding.progressBarOptimize.visibility = View.GONE
+                        showToast(this@AddRouteActivity, "Success Optimize Route")
+                        destinationData.clear()
+                        adapter.notifyDataSetChanged()
+                        finish()
+                    }
+                    is Result.Error -> {
+                        binding.progressBarOptimize.visibility = View.GONE
+
+                        showToast(this@AddRouteActivity, "Failed to optimize route because ${result.error}")
                     }
                 }
-            } else {
-                showToast(this, "Title Input must be Filled!")
             }
         }
     }
@@ -132,8 +145,6 @@ class AddRouteActivity : AppCompatActivity(), OnMapReadyCallback {
         binding.rvListDestination.layoutManager = LinearLayoutManager(this)
         binding.rvListDestination.adapter = adapter
     }
-
-
 
     private fun setupView() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

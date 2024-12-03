@@ -29,7 +29,7 @@ class UserRepository private constructor(
         userPreference.logout()
     }
 
-    suspend fun register(name: String, email: String, password: String): LiveData<Result<String?>> = liveData  {
+     fun register(name: String, email: String, password: String): LiveData<Result<String?>> = liveData  {
         emit(Result.Loading)
         try {
             val message = apiService.register(name, email, password).message
@@ -42,7 +42,7 @@ class UserRepository private constructor(
         }
     }
 
-    suspend fun login(name: String, password: String): LiveData<Result<LoginResult>> = liveData  {
+     fun login(name: String, password: String): LiveData<Result<LoginResult>> = liveData  {
         emit(Result.Loading)
         try {
             val result = apiService.login(name, password)
