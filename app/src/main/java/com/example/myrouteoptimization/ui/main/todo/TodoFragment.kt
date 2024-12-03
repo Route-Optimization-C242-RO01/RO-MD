@@ -83,11 +83,13 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
                     }
                     is Result.Success -> {
                         binding.progressBar2.visibility = View.GONE
+                        binding.error.visibility = View.GONE
                         val data = result.data
                         routeAdapter.submitList(data)
                     }
                     is Result.Error -> {
                         binding.progressBar2.visibility = View.GONE
+                        binding.error.visibility = View.VISIBLE
                         binding.error.text = result.error
                         mMap.clear()
                     }
