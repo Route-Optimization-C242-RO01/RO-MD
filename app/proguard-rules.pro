@@ -19,3 +19,19 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep Gson
+-keep class com.google.gson.** { *; }
+-keepattributes *Annotation*
+
+# Keep Retrofit
+-keep class retrofit2.** { *; }
+-keepattributes *Annotation*
+
+-keep class com.example.myrouteoptimization.data.** { *; }
+-keepattributes *Annotation*
+
+# Keep Google Maps classes
+-keep class com.google.android.gms.maps.** { *; }
+-keep class com.google.maps.android.** { *; }
+-keepattributes *Annotation*

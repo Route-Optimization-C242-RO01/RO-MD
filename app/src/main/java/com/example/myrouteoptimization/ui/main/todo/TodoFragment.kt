@@ -94,7 +94,6 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
                 }
             }
         }
-
     }
 
     @SuppressLint("SetTextI18n")
