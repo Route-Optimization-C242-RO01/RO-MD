@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
@@ -56,6 +55,10 @@ class DetailActivity : AppCompatActivity(), OnMapReadyCallback {
         id = intent.getStringExtra(EXTRA_ID)!!
         status = intent.getStringExtra(EXTRA_STATUS)!!
 
+        if (status == "finished") {
+            binding.done.visibility = View.GONE
+        }
+
         val routeAdapter = DetailAdapter()
 
         binding.rvListDestination.apply {
@@ -73,9 +76,91 @@ class DetailActivity : AppCompatActivity(), OnMapReadyCallback {
                     is Result.Success -> {
                         binding.progressBar.visibility = View.GONE
                         val data = result.data
+                        val dataRoute = data.dataRouteResults
+
                         binding.tvRouteTitle.text = data.title
-                        binding.routeDistance.text = "${NumberFormat.getNumberInstance(Locale("id", "ID")).format(data.totalDistance)} km"
-                        routeAdapter.submitList(data.dataRouteResults)
+                        binding.routeDistance.text =
+                            "${NumberFormat
+                                .getNumberInstance(Locale("id", "ID"))
+                                .format(data.totalDistance)} km"
+
+                        routeAdapter.submitList(dataRoute)
+
+                        if (dataRoute != null) {
+                            val depot = dataRoute[0]!!.dataDetailRouteRoute?.get(0)!!
+                            val depotLatLng =
+                                LatLng(
+                                    depot.latitude!!.toDouble(),
+                                    depot.longitude!!.toDouble()
+                                )
+
+                            mMap.moveCamera(
+                                CameraUpdateFactory.newLatLngZoom(
+                                    depotLatLng,
+                                    5f
+                                )
+                            )
+
+                            mMap.addMarker(
+                                MarkerOptions()
+                                    .position(depotLatLng)
+                                    .title("${depot.street}, ${depot.city}, ${depot.province}, ${depot.postalCode}")
+                                    .snippet("Depot")
+                            )
+
+                            val hueStep = 30
+                            var currentHue = 240f
+
+                            for (i in dataRoute.indices) {
+                                val newColor = Color.HSVToColor(
+                                    floatArrayOf(currentHue, 1.0f, 1.0f)
+                                )
+                                currentHue = (currentHue + hueStep) % 360
+
+                                val latlng = dataRoute[i]!!.dataDetailRouteRoute
+                                val waypoints = mutableListOf<LatLng>()
+
+                                for (j in 1.. latlng!!.size - 2) {
+                                    val currentLatLng = LatLng(latlng[j]!!.latitude!!.toDouble(), latlng[j]!!.longitude!!.toDouble())
+
+                                    mMap.addMarker(
+                                        MarkerOptions()
+                                            .position(currentLatLng)
+                                            .title("${latlng[j]?.street}, ${latlng[j]?.city}, ${latlng[j]?.province}, ${latlng[j]?.postalCode}")
+                                            .snippet("${dataRoute[i]?.vehicleSequence?.plus(1)}, ${latlng[j]?.demand} kg")
+                                    )
+
+                                    waypoints.add(currentLatLng)
+                                }
+
+                                viewModel.getRoute(depotLatLng, depotLatLng, waypoints).observe(this) { resultRoute ->
+                                    if (resultRoute != null) {
+                                        when (resultRoute) {
+                                            is Result.Loading -> {
+                                                binding.progressBar.visibility = View.VISIBLE
+                                            }
+                                            is Result.Success -> {
+                                                binding.progressBar.visibility = View.GONE
+                                                val routeData = resultRoute.data
+
+                                                if (routeData.isNotEmpty()) {
+                                                    mMap.addPolyline(
+                                                        PolylineOptions()
+                                                            .addAll(routeData)
+                                                            .color(newColor)
+                                                            .width(8f)
+                                                    )
+                                                }
+                                            }
+                                            is Result.Error -> {
+                                                binding.progressBar.visibility = View.GONE
+                                                showToast(this, resultRoute.error)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
 
                         binding.done.setOnClickListener {
                             setupAction()
@@ -96,91 +181,6 @@ class DetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
         mMap.uiSettings.isZoomControlsEnabled = true
         mMap.uiSettings.isCompassEnabled = true
-
-        viewModel.getDetailRoute(id, status).observe(this) { result ->
-            if (result != null) {
-                when (result) {
-                    is Result.Loading -> {
-                        binding.progressBar.visibility = View.VISIBLE
-                    }
-                    is Result.Success -> {
-                        binding.progressBar.visibility = View.GONE
-                        val data = result.data
-                        val dataRoute = data.dataRouteResults
-
-                        if (dataRoute != null) {
-                            val depot = dataRoute[0]!!.dataDetailRouteRoute?.get(0)!!
-                            val depotLatLng =
-                                LatLng(
-                                    depot.latitude!!.toDouble(),
-                                    depot.longitude!!.toDouble()
-                                )
-                            Log.d("Abc DetailActivity", depotLatLng.toString())
-
-                            mMap.moveCamera(
-                                CameraUpdateFactory.newLatLngZoom(
-                                    depotLatLng,
-                                    5f
-                                )
-                            )
-
-                            mMap.addMarker(
-                                MarkerOptions()
-                                    .position(depotLatLng)
-                                    .title("${depot.street}, ${depot.city}, ${depot.province}, ${depot.postalCode}")
-                                    .snippet("Depot")
-                            )
-
-                            val hueStep = 30
-                            var currentHue = 240f
-
-                            for (i in dataRoute.indices) {
-                                val latlng = dataRoute[i]!!.dataDetailRouteRoute
-
-                                val polylineOptions = PolylineOptions()
-
-                                polylineOptions.add(depotLatLng)
-
-                                for (j in 1..latlng!!.size - 2) {
-                                    val currentLatLng =
-                                        LatLng(
-                                            latlng[j]!!.latitude!!.toDouble(),
-                                            latlng[j]!!.longitude!!.toDouble()
-                                        )
-
-                                    mMap.addMarker(
-                                        MarkerOptions()
-                                            .position(currentLatLng)
-                                            .title("${latlng[j]?.street}, ${latlng[j]?.city}, ${latlng[j]?.province}, ${latlng[j]?.postalCode}")
-                                            .snippet("${dataRoute[i]?.vehicleSequence}, ${latlng[j]?.demand} kg")
-                                    )
-
-                                    polylineOptions.add(currentLatLng)
-                                }
-
-                                polylineOptions.add(depotLatLng)
-
-                                val newColor = Color.HSVToColor(
-                                    floatArrayOf(currentHue, 1.0f, 1.0f)
-                                )
-                                currentHue = (currentHue + hueStep) % 360
-
-                                mMap.addPolyline(
-                                    polylineOptions
-                                        .color(newColor)
-                                        .width(8f)
-                                )
-
-                            }
-                        }
-                    }
-                    is Result.Error -> {
-                        binding.progressBar.visibility = View.GONE
-                        showToast(this, result.error)
-                    }
-                }
-            }
-        }
     }
 
     private fun setupAction() {

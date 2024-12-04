@@ -16,7 +16,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.myrouteoptimization.R
 import com.example.myrouteoptimization.databinding.ActivityMainBinding
 import com.example.myrouteoptimization.ui.AuthViewModelFactory
-import com.example.myrouteoptimization.ui.register.RegisterViewModel
 import com.example.myrouteoptimization.ui.welcome.WelcomeActivity
 
 class MainActivity : AppCompatActivity() {

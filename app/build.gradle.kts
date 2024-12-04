@@ -12,6 +12,7 @@ android {
     defaultConfig {
         applicationId = "com.example.myrouteoptimization"
         minSdk = 24
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "1.1"
@@ -37,6 +38,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -61,6 +63,7 @@ dependencies {
 
     //Maps
     implementation(libs.play.services.maps)
+    implementation(libs.android.maps.utils)
 
     // Firebase Platform
     //noinspection UseTomlInstead

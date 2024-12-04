@@ -35,6 +35,7 @@
     <string name="route_vehicle">Vehicle 1</string>
     <string name="route_desc">... Street</string>
     <string name="error">Error</string>
+    <string name="refresh">Refresh</string>
 
 <!--    Input Error -->
     <string name="false_email_pattern">Please use @ For email</string>

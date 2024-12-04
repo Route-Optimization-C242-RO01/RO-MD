@@ -3,7 +3,6 @@ package com.example.myrouteoptimization.data.source.remote.retrofit
 import com.example.myrouteoptimization.data.source.remote.response.LoginResponse
 import com.example.myrouteoptimization.data.source.remote.response.RegisterResponse
 import com.example.myrouteoptimization.data.source.remote.response.RouteResponse
-import okhttp3.Route
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
