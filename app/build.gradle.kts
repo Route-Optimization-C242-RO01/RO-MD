@@ -65,6 +65,8 @@ dependencies {
 
     //Maps
     implementation(libs.play.services.maps)
+    implementation(libs.android.maps.utils)
+
 
     // Firebase Platform
     //noinspection UseTomlInstead

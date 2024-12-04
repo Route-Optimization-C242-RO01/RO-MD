@@ -55,6 +55,10 @@ class DetailActivity : AppCompatActivity(), OnMapReadyCallback {
         id = intent.getStringExtra(EXTRA_ID)!!
         status = intent.getStringExtra(EXTRA_STATUS)!!
 
+        if (status == "finished") {
+            binding.done.visibility = View.GONE
+        }
+
         val routeAdapter = DetailAdapter()
 
         binding.rvListDestination.apply {
@@ -72,40 +76,15 @@ class DetailActivity : AppCompatActivity(), OnMapReadyCallback {
                     is Result.Success -> {
                         binding.progressBar.visibility = View.GONE
                         val data = result.data
-                        binding.tvRouteTitle.text = data.title
-                        binding.routeDistance.text = "${NumberFormat.getNumberInstance(Locale("id", "ID")).format(data.totalDistance)} km"
-                        routeAdapter.submitList(data.dataRouteResults)
-
-                        binding.done.setOnClickListener {
-                            setupAction()
-                        }
-                    }
-                    is Result.Error -> {
-                        binding.progressBar.visibility = View.GONE
-                        showToast(this, result.error)
-                    }
-                }
-            }
-        }
-    }
-
-    @SuppressLint("SetTextI18n")
-    override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-
-        mMap.uiSettings.isZoomControlsEnabled = true
-        mMap.uiSettings.isCompassEnabled = true
-
-        viewModel.getDetailRoute(id, status).observe(this) { result ->
-            if (result != null) {
-                when (result) {
-                    is Result.Loading -> {
-                        binding.progressBar.visibility = View.VISIBLE
-                    }
-                    is Result.Success -> {
-                        binding.progressBar.visibility = View.GONE
-                        val data = result.data
                         val dataRoute = data.dataRouteResults
+
+                        binding.tvRouteTitle.text = data.title
+                        binding.routeDistance.text =
+                            "${NumberFormat
+                                .getNumberInstance(Locale("id", "ID"))
+                                .format(data.totalDistance)} km"
+
+                        routeAdapter.submitList(dataRoute)
 
                         if (dataRoute != null) {
                             val depot = dataRoute[0]!!.dataDetailRouteRoute?.get(0)!!
@@ -133,18 +112,16 @@ class DetailActivity : AppCompatActivity(), OnMapReadyCallback {
                             var currentHue = 240f
 
                             for (i in dataRoute.indices) {
+                                val newColor = Color.HSVToColor(
+                                    floatArrayOf(currentHue, 1.0f, 1.0f)
+                                )
+                                currentHue = (currentHue + hueStep) % 360
+
                                 val latlng = dataRoute[i]!!.dataDetailRouteRoute
+                                val waypoints = mutableListOf<LatLng>()
 
-                                val polylineOptions = PolylineOptions()
-
-                                polylineOptions.add(depotLatLng)
-
-                                for (j in 1..latlng!!.size - 2) {
-                                    val currentLatLng =
-                                        LatLng(
-                                            latlng[j]!!.latitude!!.toDouble(),
-                                            latlng[j]!!.longitude!!.toDouble()
-                                        )
+                                for (j in 1.. latlng!!.size - 2) {
+                                    val currentLatLng = LatLng(latlng[j]!!.latitude!!.toDouble(), latlng[j]!!.longitude!!.toDouble())
 
                                     mMap.addMarker(
                                         MarkerOptions()
@@ -153,23 +130,40 @@ class DetailActivity : AppCompatActivity(), OnMapReadyCallback {
                                             .snippet("${dataRoute[i]?.vehicleSequence?.plus(1)}, ${latlng[j]?.demand} kg")
                                     )
 
-                                    polylineOptions.add(currentLatLng)
+                                    waypoints.add(currentLatLng)
                                 }
 
-                                polylineOptions.add(depotLatLng)
+                                viewModel.getRoute(depotLatLng, depotLatLng, waypoints).observe(this) { resultRoute ->
+                                    if (resultRoute != null) {
+                                        when (resultRoute) {
+                                            is Result.Loading -> {
+                                                binding.progressBar.visibility = View.VISIBLE
+                                            }
+                                            is Result.Success -> {
+                                                binding.progressBar.visibility = View.GONE
+                                                val routeData = resultRoute.data
 
-                                val newColor = Color.HSVToColor(
-                                    floatArrayOf(currentHue, 1.0f, 1.0f)
-                                )
-                                currentHue = (currentHue + hueStep) % 360
-
-                                mMap.addPolyline(
-                                    polylineOptions
-                                        .color(newColor)
-                                        .width(8f)
-                                )
-
+                                                if (routeData.isNotEmpty()) {
+                                                    mMap.addPolyline(
+                                                        PolylineOptions()
+                                                            .addAll(routeData)
+                                                            .color(newColor)
+                                                            .width(8f)
+                                                    )
+                                                }
+                                            }
+                                            is Result.Error -> {
+                                                binding.progressBar.visibility = View.GONE
+                                                showToast(this, resultRoute.error)
+                                            }
+                                        }
+                                    }
+                                }
                             }
+                        }
+
+                        binding.done.setOnClickListener {
+                            setupAction()
                         }
                     }
                     is Result.Error -> {
@@ -179,6 +173,14 @@ class DetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
         }
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+
+        mMap.uiSettings.isZoomControlsEnabled = true
+        mMap.uiSettings.isCompassEnabled = true
     }
 
     private fun setupAction() {

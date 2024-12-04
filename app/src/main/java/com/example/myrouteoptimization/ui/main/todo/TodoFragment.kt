@@ -15,6 +15,7 @@ import com.example.myrouteoptimization.databinding.FragmentTodoBinding
 import com.example.myrouteoptimization.ui.RouteViewModelFactory
 import com.example.myrouteoptimization.ui.addroute.AddRouteActivity
 import com.example.myrouteoptimization.utils.Result
+import com.example.myrouteoptimization.utils.showToast
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -29,11 +30,13 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
 
     private var _binding: FragmentTodoBinding? = null
     private val binding get() = _binding!!
-    private val routeAdapter = TodoAdapter()
+
     private lateinit var factory: RouteViewModelFactory
     private val viewModel: TodoViewModel by viewModels {
         factory
     }
+
+    private val routeAdapter = TodoAdapter()
 
     private lateinit var mMap: GoogleMap
 
@@ -74,51 +77,33 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun observeData() {
+        if (::mMap.isInitialized) {
+            mMap.clear()
+        }
+
         viewModel.getUnfinishedRoute().observe(viewLifecycleOwner) { result ->
             if (result != null) {
                 when (result) {
                     is Result.Loading -> {
                         binding.progressBar2.visibility = View.VISIBLE
+                        binding.progressBar.visibility = View.VISIBLE
                     }
                     is Result.Success -> {
                         binding.progressBar2.visibility = View.GONE
                         binding.error.visibility = View.GONE
                         val data = result.data
                         routeAdapter.submitList(data)
-                    }
-                    is Result.Error -> {
-                        binding.progressBar2.visibility = View.GONE
-                        binding.error.visibility = View.VISIBLE
-                        binding.error.text = result.error
-                        mMap.clear()
-                    }
-                }
-            }
-        }
-    }
 
-    @SuppressLint("SetTextI18n")
-    override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-
-        mMap.uiSettings.isZoomControlsEnabled = true
-        mMap.uiSettings.isCompassEnabled = true
-
-        viewModel.getUnfinishedRoute().observe(viewLifecycleOwner) { result ->
-            if (result != null) {
-                when (result) {
-                    is Result.Loading -> {
-                        binding.progressBar.visibility = View.VISIBLE
-                    }
-                    is Result.Success -> {
-                        binding.progressBar.visibility = View.GONE
-                        val data = result.data
                         val firstData = data.first()
                         val dataRoute = firstData.dataRouteResults
 
                         binding.tvRouteTitle.text = firstData.title
-                        binding.routeDistance.text = "${NumberFormat.getNumberInstance(Locale("id", "ID")).format(firstData.totalDistance)} km"
+                        binding.routeDistance.text =
+                            "${NumberFormat
+                                .getNumberInstance(Locale("id", "ID"))
+                                .format(firstData.totalDistance)} km"
 
                         if (dataRoute != null) {
                             val depot = dataRoute[0]!!.dataDetailRouteRoute?.get(0)!!
@@ -146,18 +131,16 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
                             var currentHue = 240f
 
                             for (i in dataRoute.indices) {
+                                val newColor = Color.HSVToColor(
+                                    floatArrayOf(currentHue, 1.0f, 1.0f)
+                                )
+                                currentHue = (currentHue + hueStep) % 360
+
                                 val latlng = dataRoute[i]!!.dataDetailRouteRoute
+                                val waypoints = mutableListOf<LatLng>()
 
-                                val polylineOptions = PolylineOptions()
-
-                                polylineOptions.add(depotLatLng)
-
-                                for (j in 1 .. latlng!!.size - 2) {
-                                    val currentLatLng =
-                                        LatLng(
-                                            latlng[j]!!.latitude!!.toDouble(),
-                                            latlng[j]!!.longitude!!.toDouble()
-                                        )
+                                for (j in 1.. latlng!!.size - 2) {
+                                    val currentLatLng = LatLng(latlng[j]!!.latitude!!.toDouble(), latlng[j]!!.longitude!!.toDouble())
 
                                     mMap.addMarker(
                                         MarkerOptions()
@@ -165,32 +148,55 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
                                             .title("${latlng[j]?.street}, ${latlng[j]?.city}, ${latlng[j]?.province}, ${latlng[j]?.postalCode}")
                                             .snippet("${dataRoute[i]?.vehicleSequence?.plus(1)}, ${latlng[j]?.demand} kg")
                                     )
-                                    polylineOptions.add(currentLatLng)
+
+                                    waypoints.add(currentLatLng)
                                 }
 
-                                polylineOptions.add(depotLatLng)
+                                viewModel.getRoute(depotLatLng, depotLatLng, waypoints).observe(viewLifecycleOwner) { resultRoute ->
+                                    if (resultRoute != null) {
+                                        when (resultRoute) {
+                                            is Result.Loading -> {
+                                                binding.progressBar.visibility = View.VISIBLE
+                                            }
+                                            is Result.Success -> {
+                                                binding.progressBar.visibility = View.GONE
+                                                val routeData = resultRoute.data
 
-                                val newColor = Color.HSVToColor(
-                                    floatArrayOf(currentHue, 1.0f, 1.0f)
-                                )
-                                currentHue = (currentHue + hueStep) % 360
-
-                                mMap.addPolyline(
-                                    polylineOptions
-                                        .color(newColor)
-                                        .width(8f)
-                                )
-
+                                                if (routeData.isNotEmpty()) {
+                                                    mMap.addPolyline(
+                                                        PolylineOptions()
+                                                            .addAll(routeData)
+                                                            .color(newColor)
+                                                            .width(8f)
+                                                    )
+                                                }
+                                            }
+                                            is Result.Error -> {
+                                                binding.progressBar.visibility = View.GONE
+                                                showToast(requireContext(), resultRoute.error)
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                     is Result.Error -> {
-                        binding.progressBar.visibility = View.GONE
-                        mMap.clear()
+                        binding.progressBar2.visibility = View.GONE
+                        binding.error.visibility = View.VISIBLE
+                        binding.error.text = result.error
                     }
                 }
             }
         }
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+
+        mMap.uiSettings.isZoomControlsEnabled = true
+        mMap.uiSettings.isCompassEnabled = true
     }
 
     override fun onDestroyView() {
