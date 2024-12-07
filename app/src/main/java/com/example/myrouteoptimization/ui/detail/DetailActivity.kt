@@ -20,6 +20,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import java.text.NumberFormat
@@ -74,7 +75,6 @@ class DetailActivity : AppCompatActivity(), OnMapReadyCallback {
                         binding.progressBar.visibility = View.VISIBLE
                     }
                     is Result.Success -> {
-                        binding.progressBar.visibility = View.GONE
                         val data = result.data
                         val dataRoute = data.dataRouteResults
 
@@ -87,19 +87,15 @@ class DetailActivity : AppCompatActivity(), OnMapReadyCallback {
                         routeAdapter.submitList(dataRoute)
 
                         if (dataRoute != null) {
+                            val boundsBuilder = LatLngBounds.Builder()
+
                             val depot = dataRoute[0]!!.dataDetailRouteRoute?.get(0)!!
                             val depotLatLng =
                                 LatLng(
                                     depot.latitude!!.toDouble(),
                                     depot.longitude!!.toDouble()
                                 )
-
-                            mMap.moveCamera(
-                                CameraUpdateFactory.newLatLngZoom(
-                                    depotLatLng,
-                                    5f
-                                )
-                            )
+                            boundsBuilder.include(depotLatLng)
 
                             mMap.addMarker(
                                 MarkerOptions()
@@ -122,6 +118,7 @@ class DetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
                                 for (j in 1.. latlng!!.size - 2) {
                                     val currentLatLng = LatLng(latlng[j]!!.latitude!!.toDouble(), latlng[j]!!.longitude!!.toDouble())
+                                    boundsBuilder.include(currentLatLng)
 
                                     mMap.addMarker(
                                         MarkerOptions()
@@ -133,6 +130,16 @@ class DetailActivity : AppCompatActivity(), OnMapReadyCallback {
                                     waypoints.add(currentLatLng)
                                 }
 
+                                val bounds: LatLngBounds = boundsBuilder.build()
+                                mMap.animateCamera(
+                                    CameraUpdateFactory.newLatLngBounds(
+                                        bounds,
+                                        resources.displayMetrics.widthPixels,
+                                        resources.displayMetrics.heightPixels,
+                                        70
+                                    )
+                                )
+
                                 viewModel.getRoute(depotLatLng, depotLatLng, waypoints).observe(this) { resultRoute ->
                                     if (resultRoute != null) {
                                         when (resultRoute) {
@@ -140,7 +147,6 @@ class DetailActivity : AppCompatActivity(), OnMapReadyCallback {
                                                 binding.progressBar.visibility = View.VISIBLE
                                             }
                                             is Result.Success -> {
-                                                binding.progressBar.visibility = View.GONE
                                                 val routeData = resultRoute.data
 
                                                 if (routeData.isNotEmpty()) {
@@ -161,6 +167,8 @@ class DetailActivity : AppCompatActivity(), OnMapReadyCallback {
                                 }
                             }
                         }
+
+                        binding.progressBar.visibility = View.GONE
 
                         binding.done.setOnClickListener {
                             setupAction()
