@@ -21,6 +21,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import java.text.NumberFormat
@@ -106,19 +107,15 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
                                 .format(firstData.totalDistance)} km"
 
                         if (dataRoute != null) {
+                            val boundsBuilder = LatLngBounds.Builder()
+
                             val depot = dataRoute[0]!!.dataDetailRouteRoute?.get(0)!!
                             val depotLatLng =
                                 LatLng(
                                     depot.latitude!!.toDouble(),
                                     depot.longitude!!.toDouble()
                                 )
-
-                            mMap.moveCamera(
-                                CameraUpdateFactory.newLatLngZoom(
-                                    depotLatLng,
-                                    5f
-                                )
-                            )
+                            boundsBuilder.include(depotLatLng)
 
                             mMap.addMarker(
                                 MarkerOptions()
@@ -141,6 +138,7 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
 
                                 for (j in 1.. latlng!!.size - 2) {
                                     val currentLatLng = LatLng(latlng[j]!!.latitude!!.toDouble(), latlng[j]!!.longitude!!.toDouble())
+                                    boundsBuilder.include(currentLatLng)
 
                                     mMap.addMarker(
                                         MarkerOptions()
@@ -152,6 +150,16 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
                                     waypoints.add(currentLatLng)
                                 }
 
+                                val bounds: LatLngBounds = boundsBuilder.build()
+                                mMap.animateCamera(
+                                    CameraUpdateFactory.newLatLngBounds(
+                                        bounds,
+                                        resources.displayMetrics.widthPixels,
+                                        resources.displayMetrics.heightPixels,
+                                        50
+                                    )
+                                )
+
                                 viewModel.getRoute(depotLatLng, depotLatLng, waypoints).observe(viewLifecycleOwner) { resultRoute ->
                                     if (resultRoute != null) {
                                         when (resultRoute) {
@@ -159,7 +167,6 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
                                                 binding.progressBar.visibility = View.VISIBLE
                                             }
                                             is Result.Success -> {
-                                                binding.progressBar.visibility = View.GONE
                                                 val routeData = resultRoute.data
 
                                                 if (routeData.isNotEmpty()) {
@@ -180,9 +187,12 @@ class TodoFragment : Fragment(), OnMapReadyCallback {
                                 }
                             }
                         }
+
+                        binding.progressBar.visibility = View.GONE
                     }
                     is Result.Error -> {
                         binding.progressBar2.visibility = View.GONE
+                        binding.progressBar.visibility = View.GONE
                         binding.error.visibility = View.VISIBLE
                         binding.error.text = result.error
                     }

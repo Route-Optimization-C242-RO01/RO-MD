@@ -16,6 +16,7 @@ import com.example.myrouteoptimization.ui.detail.DetailActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import java.text.NumberFormat
@@ -55,12 +56,15 @@ class DoneAdapter : ListAdapter<DataItem, DoneAdapter.MyViewHolder>(DIFF_CALLBAC
             val dataRoute = route.dataRouteResults
 
             if (dataRoute != null) {
+                val boundsBuilder = LatLngBounds.Builder()
+
                 val depot = dataRoute[0]!!.dataDetailRouteRoute?.get(0)!!
                 val depotLatLng =
                     LatLng(
                         depot.latitude!!.toDouble(),
                         depot.longitude!!.toDouble()
                     )
+                boundsBuilder.include(depotLatLng)
 
                 mapView.getMapAsync { googleMap ->
                     googleMap.moveCamera(
@@ -93,6 +97,7 @@ class DoneAdapter : ListAdapter<DataItem, DoneAdapter.MyViewHolder>(DIFF_CALLBAC
                                     latlng[j]!!.latitude!!.toDouble(),
                                     latlng[j]!!.longitude!!.toDouble()
                                 )
+                            boundsBuilder.include(currentLatLng)
 
                             googleMap.addMarker(
                                 MarkerOptions()
@@ -113,6 +118,14 @@ class DoneAdapter : ListAdapter<DataItem, DoneAdapter.MyViewHolder>(DIFF_CALLBAC
                             polylineOptions
                                 .color(newColor)
                                 .width(8f)
+                        )
+
+                        val bounds: LatLngBounds = boundsBuilder.build()
+                        googleMap.moveCamera(
+                            CameraUpdateFactory.newLatLngBounds(
+                                bounds,
+                                50
+                            )
                         )
                     }
                 }
