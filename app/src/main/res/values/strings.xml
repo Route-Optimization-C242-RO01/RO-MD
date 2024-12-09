@@ -36,6 +36,7 @@
     <string name="warning_message">The first Time input is the depot location</string>
     <string name="Refresh">Refresh </string>
     <string name="error">Error</string>
+    <string name="destination_data_warning">The destination data is empty, please add data.</string>
 
 <!--    Input Error -->
     <string name="required_password_length_message">Password must be at least 8 Character</string>

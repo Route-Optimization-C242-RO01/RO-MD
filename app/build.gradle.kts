@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -5,6 +8,10 @@ plugins {
     id("com.google.gms.google-services")
     id("kotlin-parcelize")
 }
+
+val localProperties = Properties()
+localProperties.load(FileInputStream("local.properties"))
+val googleDirectionApiKey : String = localProperties.getProperty("GOOGLE_DIRECTION_API_KEY")
 
 android {
     namespace = "com.example.myrouteoptimization"
@@ -29,6 +36,10 @@ android {
                 "proguard-rules.pro"
             )
             isShrinkResources = false
+            buildConfigField("String", "GOOGLE_DIRECTION_API_KEY", googleDirectionApiKey)
+        }
+        debug {
+            buildConfigField("String", "GOOGLE_DIRECTION_API_KEY", googleDirectionApiKey)
         }
     }
     compileOptions {
@@ -69,7 +80,7 @@ dependencies {
 
 
     // Firebase Platform
-    //noinspection UseTomlInstead
+    //noinspection GradleDependency,UseTomlInstead
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
 
     // Retrofit

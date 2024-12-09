@@ -36,7 +36,7 @@ class AddDestinationActivity : AppCompatActivity() {
                 warningMessageDepot.visibility = View.VISIBLE
             } else {
                 layoutKg.visibility = View.VISIBLE
-                warningMessageDepot.text = "Note : Kapasitas setiap Kendaraan maksimum sebesar 120 kg "
+                warningMessageDepot.text = "Note: The maximum capacity for each vehicle is 120 kg.\n"
             }
         }
 
